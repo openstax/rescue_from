@@ -24,5 +24,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pg", '~> 0.18.3'
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec-rails"
+  spec.add_development_dependency "rspec-rails", '~> 3.3.3'
+  spec.add_development_dependency "pry-nav", '~> 0.2.4'
+  spec.add_development_dependency "pry-rails", '~> 0.3.4'
+  spec.add_development_dependency "apipie-rails", '~> 0.3.4'
 end
