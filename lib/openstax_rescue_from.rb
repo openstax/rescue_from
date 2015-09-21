@@ -1,3 +1,5 @@
+require 'active_support/all'
+
 ActiveSupport::Inflector.inflections do |inflect|
   inflect.acronym 'OpenStax'
 end
