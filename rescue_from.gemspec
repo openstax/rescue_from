@@ -29,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-rails", '~> 0.3.4'
   spec.add_development_dependency "apipie-rails", '~> 0.3.4'
   spec.add_development_dependency "database_cleaner", '~> 1.5.0'
+  spec.add_development_dependency "oauth2", '~> 1.0.0'
 end
