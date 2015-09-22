@@ -84,6 +84,21 @@ module Test
       end
     end
 
+    it 'recursively logs exceptions with causes' do
+      allow_any_instance_of(SecurityTransgression).to receive(:cause) {
+        double(:SecurityTransgression, :blank? => false,
+                                       message: 'double cause',
+                                       cause: nil,
+                                       backtrace: [])
+      }
+
+      allow(controller).to receive(:log_rails_error).and_call_original
+
+      get :bad_action, exception: 'SecurityTransgression'
+
+      expect(controller).to have_received(:log_rails_error).twice
+    end
+
     it 'uses 500 for unknown exceptions in the status map' do
       get :bad_action, exception: 'OAuth2::Error'
       expect(response).to have_http_status(500)

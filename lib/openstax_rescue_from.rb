@@ -31,9 +31,7 @@ module OpenStax
     def log_rails_error(exception)
       name = exception.class.name
       message = exception.message
-      extras = if extras_proc = Exceptions::EXTRAS_MAP[exception.class.name]
-                 extras_proc.call(exception)
-               end
+      extras = get_extras(exception)
 
       if exception.cause.blank?
         header = 'An exception occurred'
@@ -49,6 +47,12 @@ module OpenStax
                            "#{extras}\n\n#{backtrace}")
 
         log_rails_error(exception.cause)
+      end
+    end
+
+    def get_extras(exception)
+      if extras_proc = Exceptions::EXTRAS_MAP[exception.class.name]
+        extras_proc.call(exception)
       end
     end
 
