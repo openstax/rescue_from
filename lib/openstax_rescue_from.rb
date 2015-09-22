@@ -1,5 +1,5 @@
 require 'openstax/rescue_from/engine'
-require 'openstax/rescue_from/exceptions'
+require 'openstax/rescue_from/exception_wrapper'
 
 module OpenStax
   module RescueFrom
@@ -14,54 +14,8 @@ module OpenStax
     end
 
     def rescue_from_openstax_exception(exception)
-      log_rails_error(exception)
-
-      if Rails.application.config.consider_all_requests_local
-        raise exception
-      else
-        status = Exceptions::STATUS_MAP[exception.class.name]
-        respond_to do |f|
-          f.html { render template: 'errors/any', layout: 'application', status: status }
-          f.json { render json: error_json, status: status }
-          f.all { render nothing: true, status: status }
-        end
-      end
-    end
-
-    def log_rails_error(exception)
-      name = exception.class.name
-      message = exception.message
-      extras = get_extras(exception)
-
-      if exception.cause.blank?
-        header = 'An exception occurred'
-        backtrace = exception.backtrace.join("\n")
-
-        Rails.logger.error("#{header}: #{name} [#{generate_error_id}] <#{message}> " +
-                           "#{extras}\n\n#{backtrace}")
-      else
-        header = 'Exception cause'
-        backtrace = exception.backtrace.first
-
-        Rails.logger.error("#{header}: #{name} [#{generate_error_id}] <#{message}> " +
-                           "#{extras}\n\n#{backtrace}")
-
-        log_rails_error(exception.cause)
-      end
-    end
-
-    def get_extras(exception)
-      if extras_proc = Exceptions::EXTRAS_MAP[exception.class.name]
-        extras_proc.call(exception)
-      end
-    end
-
-    def error_json
-      { error_id: generate_error_id }
-    end
-
-    def generate_error_id
-      "%06d#{SecureRandom.random_number(10**6)}"
+      exception_wrapper = ExceptionWrapper.new(exception: exception, listener: self)
+      exception_wrapper.handle_exceptions!
     end
 
     class << self
