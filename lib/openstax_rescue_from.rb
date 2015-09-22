@@ -15,7 +15,15 @@ module OpenStax
 
     def rescue_from_openstax_exception(exception)
       status = Exceptions::STATUS_MAP[exception.class.name]
-      render template: 'errors/any', layout: 'application', status: status
+      respond_to do |type|
+        type.html { render template: 'errors/any', layout: 'application', status: status }
+        type.json { render json: error_json, status: status }
+        type.all { render nothing: true, status: status }
+      end
+    end
+
+    def error_json
+      { error_id: "%06d#{SecureRandom.random_number(10**6)}" }
     end
 
 
