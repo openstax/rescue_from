@@ -3,16 +3,18 @@ module Test
     openstax_rescue
 
     def bad_action
+      exception = params[:exception].constantize
       raise case params[:exception]
             when 'ActionController::RoutingError'
-              params[:exception].constantize.new('routing error')
+              exception.new('routing error')
             when 'Apipie::ParamMissing'
-              params[:exception].constantize.new('apipie error')
+              exception.new('apipie error')
             when 'ActionView::MissingTemplate'
-              params[:exception].constantize.new(['some/path', 'other/path'],
-                                                 'some/path', [], nil, '')
+              exception.new(['some/path', 'other/path'], 'some/path', [], nil, '')
+            when 'OAuth2::Error'
+              exception.new(OAuth2::Response.new(Faraday::Response.new))
             else
-              params[:exception].constantize.new
+              exception.new
             end
     end
   end

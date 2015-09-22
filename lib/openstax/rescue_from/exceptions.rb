@@ -22,6 +22,14 @@ module OpenStax
         'Apipie::ParamMissing' => :unprocessable_entity,
         'ActionView::MissingTemplate' => :bad_request,
       })
+
+      EXTRAS_MAP = {
+        'OAuth2::Error' => ->(exception) do
+          { headers: exception.response.headers,
+            status: exception.response.status,
+            body: exception.response.body }
+        end
+      }
     end
   end
 end
