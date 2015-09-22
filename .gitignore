@@ -7,7 +7,7 @@
 /pkg/
 /spec/reports/
 /tmp/
-log/*.log
+*.log
 .DS_Store
 *~
 
