@@ -74,6 +74,12 @@ See `OpenStax::RescueFrom::WrappedException::STATUS_MAP`
 
 Located as of this writing, https://github.com/openstax/rescue_from/blob/implement-exception-emails/lib/openstax/rescue_from/wrapped_exception.rb#L74
 
+## TODO
+
+1. Implement ExceptionNotifier mailer
+2. Provide install generator to copy in default config initializer
+3. Provide stock `errors/any` template in install generator
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
