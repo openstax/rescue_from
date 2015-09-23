@@ -1,29 +1,28 @@
-ActiveSupport::Inflector.inflections do |inflect|
-  inflect.acronym 'OpenStax'
-end
-
-require "openstax/rescue_from/configuration"
-require "openstax/rescue_from/version"
+require 'openstax/rescue_from/engine'
+require 'openstax/rescue_from/wrapped_exception'
 
 module OpenStax
   module RescueFrom
+    def self.included(base)
+      base.extend ClassMethods
+    end
 
-      class << self
+    module ClassMethods
+      def openstax_exception_rescue
+        rescue_from Exception, with: :rescue_from_openstax_exception
+      end
+    end
 
-      ###########################################################################
-      #
-      # Configuration machinery.
-      #
-      # To configure OpenStax RescueFrom, put the following code in your
-      # application's initialization logic
-      # (eg. in the config/initializers in a Rails app)
-      #
+    def rescue_from_openstax_exception(exception)
+      wrapped_exception = WrappedException.new(exception: exception, listener: self)
+      wrapped_exception.handle_exception!
+    end
+
+    class << self
       #   OpenStax::RescueFrom.configure do |config|
       #     config.<parameter name> = <parameter value>
       #     ...
       #   end
-      #
-
       def configure
         yield configuration
       end
@@ -31,7 +30,6 @@ module OpenStax
       def configuration
         @configuration ||= Configuration.new
       end
-
     end
   end
 end
