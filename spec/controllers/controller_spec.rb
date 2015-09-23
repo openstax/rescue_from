@@ -94,5 +94,20 @@ module Test
       expect(response).to have_http_status(500)
       expect(response).to render_template('errors/any')
     end
+
+    it 'does not send emails for non-notifying exceptions' do
+      ActionMailer::Base.deliveries.clear
+
+      OpenStax::RescueFrom::WrappedException::NON_NOTIFYING.each do |ex|
+        get :bad_action, exception: ex
+        expect(ActionMailer::Base.deliveries).to be_empty
+      end
+    end
+
+    it 'emails for other exceptions' do
+      ActionMailer::Base.deliveries.clear
+      get :bad_action, exception: 'ArgumentError'
+      expect(ActionMailer::Base.deliveries).not_to be_empty
+    end
   end
 end

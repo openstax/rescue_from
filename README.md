@@ -48,6 +48,7 @@ This configuration, which you should place in `./config/initializers/openstax_re
 OpenStax::RescueFrom.configure do |config|
   config.raise_exceptions = false          # Rails users may wish to use Rails.application.config.consider_all_requests_local to decide this
   config.system_logger = Rails.logger      # Any logger that takes a string in an #error method will work
+  config.notifier = ExceptionNotifier      # Any notifier that takes an exception in a #notify_exception method will work
   config.html_template_path = 'errors/any' # The template path for the HTML response
   config.layout_name = 'application'       # The layout name for the HTML response
 end
