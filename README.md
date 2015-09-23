@@ -60,7 +60,7 @@ Returns corresponding HTTP status code
 ## JSON Response
 
 ```json
-{ error_id: 'some_generated_error_id_for_log_reference' }
+{ "error_id" : "some_generated_error_id_for_log_reference" }
 // with the corresponding HTTP status code
 ```
 
