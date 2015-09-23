@@ -3,7 +3,7 @@ require 'openstax/rescue_from/error'
 
 module OpenStax
   module RescueFrom
-    class ExceptionWrapper
+    class WrappedException
       attr_reader :exception, :listener, :logger
 
       def initialize(exception:, listener: nil, logger: Logger.new(wrapped: self))

@@ -1,5 +1,5 @@
 require 'openstax/rescue_from/engine'
-require 'openstax/rescue_from/exception_wrapper'
+require 'openstax/rescue_from/wrapped_exception'
 
 module OpenStax
   module RescueFrom
@@ -14,8 +14,8 @@ module OpenStax
     end
 
     def rescue_from_openstax_exception(exception)
-      exception_wrapper = ExceptionWrapper.new(exception: exception, listener: self)
-      exception_wrapper.handle_exception!
+      wrapped_exception = WrappedException.new(exception: exception, listener: self)
+      wrapped_exception.handle_exception!
     end
 
     class << self

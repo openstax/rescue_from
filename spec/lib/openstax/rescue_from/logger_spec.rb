@@ -1,6 +1,6 @@
 require 'rails_helper'
 require './spec/support/exceptions_list'
-require 'openstax/rescue_from/exception_wrapper'
+require 'openstax/rescue_from/wrapped_exception'
 require 'openstax/rescue_from/logger'
 
 module OpenStax
@@ -9,7 +9,7 @@ module OpenStax
       it 'recursively logs exceptions with causes' do
         cause = double(:caused, cause: nil).as_null_object
         exception = double(:exception, cause: cause).as_null_object
-        wrapper = ExceptionWrapper.new(exception: exception, listener: nil)
+        wrapper = WrappedException.new(exception: exception, listener: nil)
         logger = described_class.new(wrapped: wrapper)
 
         allow(logger).to receive(:record_system_error!).and_call_original

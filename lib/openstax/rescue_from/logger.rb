@@ -18,7 +18,7 @@ module OpenStax
       private
       def record_system_error_recursively!
         if wrapped.cause
-          @wrapped = ExceptionWrapper.new(exception: wrapped.cause)
+          @wrapped = WrappedException.new(exception: wrapped.cause)
           record_system_error!
         end
       end
