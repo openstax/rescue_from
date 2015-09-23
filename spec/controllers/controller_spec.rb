@@ -6,12 +6,17 @@ module Test
   RSpec.describe TestController do
     before do
       allow(SecureRandom).to receive(:random_number) { 123 }
-      Rails.application.config.consider_all_requests_local = false
+
+      OpenStax::RescueFrom.configure do |c|
+        c.raise_exceptions = false # default
+      end
     end
 
-    context 'rails considers all requests local' do
+    context 'configured to raise exceptions' do
       before do
-        Rails.application.config.consider_all_requests_local = true
+        OpenStax::RescueFrom.configure do |c|
+          c.raise_exceptions = true
+        end
       end
 
       it 'raises the exceptions' do

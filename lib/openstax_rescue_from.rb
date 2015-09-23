@@ -15,7 +15,7 @@ module OpenStax
 
     def rescue_from_openstax_exception(exception)
       exception_wrapper = ExceptionWrapper.new(exception: exception, listener: self)
-      exception_wrapper.handle_exceptions!
+      exception_wrapper.handle_exception!
     end
 
     class << self

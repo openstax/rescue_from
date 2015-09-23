@@ -6,26 +6,30 @@ module OpenStax
     class ExceptionWrapper
       attr_reader :exception, :listener, :logger
 
-      def initialize(exception:, listener: nil, logger: Logger.new(exception: self))
+      def initialize(exception:, listener: nil, logger: Logger.new(wrapped: self))
         @exception = exception
         @listener = listener
         @logger = logger
       end
 
-      def handle_exceptions!
-        logger.record_rails_error!
+      def handle_exception!
+        logger.record_system_error!
 
-        if Rails.application.config.consider_all_requests_local
+        if config.raise_exceptions
           raise exception
         else
-          listener.respond_to do |f|
-            f.html { listener.render template: 'errors/any', layout: 'application',
-                                                             status: status }
+          listener_response
+        end
+      end
 
-            f.json { listener.render json: { error_id: Error.id }, status: status }
+      def listener_response
+        listener.respond_to do |f|
+          f.html { listener.render template: 'errors/any', layout: 'application',
+                                                           status: status }
 
-            f.all { listener.render nothing: true, status: status }
-          end
+          f.json { listener.render json: { error_id: Error.id }, status: status }
+
+          f.all { listener.render nothing: true, status: status }
         end
       end
 
@@ -96,6 +100,11 @@ module OpenStax
             body: exception.response.body }
         end
       }
+
+      private
+      def config
+        OpenStax::RescueFrom.configuration
+      end
     end
   end
 end

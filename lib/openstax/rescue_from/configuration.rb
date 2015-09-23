@@ -2,10 +2,11 @@ module OpenStax
   module RescueFrom
     class Configuration
 
-      # attr_accessor, attr_reader, attr_writers for variables
+      attr_accessor :raise_exceptions, :system_logger
 
       def initialize
-        # set default values for variables
+        @raise_exceptions = false
+        @system_logger = Rails.logger
       end
     end
   end

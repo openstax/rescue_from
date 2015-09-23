@@ -1,26 +1,30 @@
 module OpenStax
   module RescueFrom
     class Logger
-      attr_reader :exception
+      attr_reader :wrapped
 
-      def initialize(exception:)
-        @exception = exception
+      def initialize(wrapped:)
+        @wrapped = wrapped
       end
 
-      def record_rails_error!
-        Rails.logger.error("#{exception.header}: #{exception.name} " +
-                          "[#{exception.error_id}] <#{exception.message}> " +
-                           "#{exception.extras}\n\n#{exception.backtrace}")
+      def record_system_error!
+        config.system_logger.error("#{wrapped.header}: #{wrapped.name} " +
+                                   "[#{wrapped.error_id}] <#{wrapped.message}> " +
+                                   "#{wrapped.extras}\n\n#{wrapped.backtrace}")
 
-        record_rails_error_recursively!
+        record_system_error_recursively!
       end
 
       private
-      def record_rails_error_recursively!
-        if exception.cause
-          @exception = ExceptionWrapper.new(exception: exception.cause)
-          record_rails_error!
+      def record_system_error_recursively!
+        if wrapped.cause
+          @wrapped = ExceptionWrapper.new(exception: wrapped.cause)
+          record_system_error!
         end
+      end
+
+      def config
+        OpenStax::RescueFrom.configuration
       end
     end
   end
