@@ -37,7 +37,7 @@ module Test
                    allow(extras_proc).to receive(:call) { 'found extras' }
                    'found extras'
                  else
-                   nil
+                   "{}"
                  end
 
         allow_any_instance_of(ex.constantize).to receive(:message) { 'ex msg' }

@@ -45,6 +45,8 @@ module OpenStax
       def extras
         @extras ||= if extras_proc = EXTRAS_MAP[exception.class.name]
                       extras_proc.call(exception)
+                    else
+                      "{}"
                     end
       end
 
