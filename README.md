@@ -20,6 +20,12 @@ Or install it yourself as:
 
 ## Usage
 
+Run the install generator to get the config initializer, the error template, and the configured middleware per environment
+
+```
+$ rails g open_stax:rescue_from:install
+```
+
 Just declare the openstax exception rescuer in your controller, preferably your `ApplicationController`
 
 ```ruby
@@ -56,7 +62,7 @@ end
 
 ## HTML Response
 
-Renders the `errors/any` template in `./app/views` in the `application` layout. Client must provide this. Install generator possibly coming soon to copy a stock one in.
+Renders the `errors/any` template in `./app/views` in the `application` layout. Install generator provides this template.
 
 Returns corresponding HTTP status code
 
@@ -76,12 +82,6 @@ Renders a blank response body with the corresponding HTTP status code
 See `OpenStax::RescueFrom::WrappedException::STATUS_MAP`
 
 Located as of this writing, https://github.com/openstax/rescue_from/blob/implement-exception-emails/lib/openstax/rescue_from/wrapped_exception.rb#L74
-
-## TODO
-
-1. Implement ExceptionNotifier mailer
-2. Provide install generator to copy in default config initializer
-3. Provide stock `errors/any` template in install generator
 
 ## Development
 
