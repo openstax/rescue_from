@@ -39,4 +39,10 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  config.middleware.use ExceptionNotification::Rack, email: {
+    email_prefix: "[RescueFrom] (TEST) ",
+    sender_address: %{"OpenStax RescueFrom" <noreply@openstax.org>},
+    exception_recipients: %w{tutor-notifications@openstax.org}
+  }
 end
