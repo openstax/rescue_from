@@ -6,8 +6,8 @@ require 'openstax/rescue_from/version'
 Gem::Specification.new do |spec|
   spec.name          = "openstax_rescue_from"
   spec.version       = OpenStax::RescueFrom::VERSION
-  spec.authors       = ["JP Slavinsky"]
-  spec.email         = ["jps@kindlinglabs.com"]
+  spec.authors       = ["JP Slavinsky", "Joe Sak"]
+  spec.email         = ["jps@kindlinglabs.com", "joe@avant-gardelabs.com"]
 
   spec.summary       = %q{Common exception `rescue_from` handling for OpenStax sites.}
   spec.homepage      = "https://github.com/openstax/rescue_from"
