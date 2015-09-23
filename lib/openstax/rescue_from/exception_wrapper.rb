@@ -22,17 +22,6 @@ module OpenStax
         end
       end
 
-      def listener_response
-        listener.respond_to do |f|
-          f.html { listener.render template: 'errors/any', layout: 'application',
-                                                           status: status }
-
-          f.json { listener.render json: { error_id: Error.id }, status: status }
-
-          f.all { listener.render nothing: true, status: status }
-        end
-      end
-
       def header
         @header ||= cause.blank? ? 'An exception occurred' : 'Exception cause'
       end
@@ -102,6 +91,20 @@ module OpenStax
       }
 
       private
+      def listener_response
+        listener.respond_to do |f|
+          f.html { listener.render template: config.html_template_path,
+                                   layout: config.layout_name,
+                                   status: status }
+
+          f.json { listener.render json: { error_id: error_id },
+                                   status: status }
+
+          f.all { listener.render nothing: true,
+                                  status: status }
+        end
+      end
+
       def config
         OpenStax::RescueFrom.configuration
       end
