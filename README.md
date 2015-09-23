@@ -7,7 +7,7 @@ This is the gem that brings together disparate systems within OpenStax and abstr
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rescue_from', '~> 1.0.0'
+gem 'openstax_rescue_from', '~> 1.0.0'
 ```
 
 And then execute:
@@ -16,7 +16,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install rescue_from
+    $ gem install openstax_rescue_from
 
 ## Usage
 
