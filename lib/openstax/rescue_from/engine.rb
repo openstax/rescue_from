@@ -1,9 +1,3 @@
-require 'active_support/all'
-require 'exception_notification'
-
-require "openstax/rescue_from/configuration"
-require "openstax/rescue_from/version"
-
 module OpenStax
   module RescueFrom
     class Engine < ::Rails::Engine

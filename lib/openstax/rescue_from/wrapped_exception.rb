@@ -1,6 +1,3 @@
-require 'openstax/rescue_from/logger'
-require 'openstax/rescue_from/error'
-
 module OpenStax
   module RescueFrom
     class WrappedException

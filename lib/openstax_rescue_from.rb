@@ -1,4 +1,14 @@
+require 'active_support/all'
+require 'exception_notification'
+
+require "openstax/rescue_from/configuration"
+require "openstax/rescue_from/version"
 require 'openstax/rescue_from/engine'
+
+require "openstax/rescue_from/deploy_utils"
+require 'openstax/rescue_from/logger'
+require 'openstax/rescue_from/error'
+require 'openstax/rescue_from/friendly_message'
 require 'openstax/rescue_from/wrapped_exception'
 
 module OpenStax
@@ -15,6 +25,9 @@ module OpenStax
 
     def rescue_from_openstax_exception(exception)
       wrapped_exception = WrappedException.new(exception: exception, listener: self)
+      @message = FriendlyMessage.translate(wrapped_exception.status)
+      @code = Rack::Utils.status_code(wrapped_exception.status)
+      @error_id = wrapped_exception.error_id
       wrapped_exception.handle_exception!
     end
 

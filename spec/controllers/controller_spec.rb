@@ -109,5 +109,15 @@ module Test
       get :bad_action, exception: 'ArgumentError'
       expect(ActionMailer::Base.deliveries).not_to be_empty
     end
+
+    it 'sets message and code instance variables for html response' do
+      get :bad_action, exception: 'ArgumentError'
+
+      expect(assigns[:code]).to eq(500)
+      expect(assigns[:error_id]).to eq("%06d123")
+      expect(assigns[:message]).to eq(
+        "Sorry, Tutor had some unexpected trouble with your request."
+      ) # 'Tutor' is configurable!
+    end
   end
 end
