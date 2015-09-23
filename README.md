@@ -38,6 +38,8 @@ OpenStax::RescueFrom uses a `WrappedException` around the rescued exception for 
 
 From there, an `OpenStax::RescueFrom::Logger` is used to write customized entries to the configured `system_logger` and to do recursive logging for exceptions with causes
 
+`WrappedException` requires an Exception, and a Listener. The listener should be an instance of `ActionController::Base`, unless of course the developer can provide a listener that can handle a `#respond_to` block and `#render` method similar to `ActionController::Base`
+
 ## Configuration
 
 This configuration, which you should place in `./config/initializers/openstax_rescue_from.rb` shows the defaults
