@@ -8,7 +8,7 @@ module OpenStax
     end
 
     module ClassMethods
-      def openstax_rescue
+      def openstax_exception_rescue
         rescue_from Exception, with: :rescue_from_openstax_exception
       end
     end
