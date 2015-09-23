@@ -10,7 +10,7 @@ module OpenStax
       end
 
       def copy_initializer
-        copy_file "openstax_rescue_from.rb", "config/initializers/openstax_rescue_from.rb"
+        copy_file "rescue_from.rb", "config/initializers/rescue_from.rb"
       end
 
       def configure_environments
