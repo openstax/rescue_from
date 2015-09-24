@@ -40,6 +40,7 @@ class ApplicationController < ActionController::Base
   # Override the before and after hooks if you want to
   # (See 'Controller before/after hooks')
   #
+  # private
   # def before_openstax_exception_rescue(wrapped_exception)
   #   # noop
   # end
