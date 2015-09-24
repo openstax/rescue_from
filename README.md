@@ -83,24 +83,21 @@ See `OpenStax::RescueFrom::Configuration`
 
 https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
 
-# Default callback behavior
+## Default callback behavior
+``ruby
+#
+# Mixed in Controller module instance method
+#
 
-## HTML Response
+def openstax_exception_rescue_callback(wrapped_exception)
+  respond_to do |f|
+    f.html { render template: config.html_template_path, layout: config.layout_name, status: wrapped_exception.status }
+    f.json { render json: { error_id: wrapped_exception.error_id }, status: wrapped_exception.status }
+    f.all { render nothing: true, status: wrapped_exception.status }
+  end
+end
 
-```ruby
-render template: config.html_template_path, layout: config.layout_name, status: wrapped_exception.status
-```
-
-## JSON Response
-
-```ruby
-render json: { error_id: wrapped_exception.error_id }, status: wrapped_exception.status
-```
-
-## All other formats
-
-```ruby
-render nothing: true, status: wrapped_exception
+# Just override this method in your own controller/listener
 ```
 
 ## HTTP Status Codes
