@@ -26,29 +26,32 @@ Run the install generator to get the config initializer, the error template, and
 $ rails g open_stax:rescue_from:install
 ```
 
-Just declare that you want to use the openstax exception rescuer in your controller, preferably your `ApplicationController`
+Declare that you want to use the openstax exception rescuer in your controller, preferably your `ApplicationController`
 
 ```ruby
 class ApplicationController < ActionController::Base
+
   # ...
 
   use_openstax_exception_rescue
 
   # ...
+
+  # Override this function and respond how you see fit
+  # (See 'Default callback behavior')
+  #
+  # def openstax_exception_rescue_callback(wrapped_exception)
+  #   respond_to do |f|
+  #     f.xml { render text: "I respond strangely to the XML format!",
+  #                    status: wrapped_exception.status }
+  #   end
+  # end
 end
 ```
 
-## How it works
-
-OpenStax::RescueFrom uses a `WrappedException` around the rescued exception for convenient access to information such as: `name`, `header`, `status`, `message`, and `error_id`
-
-From there, an `OpenStax::RescueFrom::Logger` is used to write customized entries to the configured `system_logger` and to do recursive logging for exceptions with causes
-
-`WrappedException` requires an Exception, and a Listener. The listener should be an instance of `ActionController::Base`, unless of course the developer provides a listener that responds to `#openstax_exception_rescue_callback(wrapped_exception)`, or similarly, you can overwrite this method in your controller.
-
 ## Configuration
 
-This configuration, which you should place in `./config/initializers/openstax_rescue_from.rb` shows the defaults
+This configuration, which is placed in `./config/initializers/openstax_rescue_from.rb` by the install generator, shows the defaults:
 
 ```ruby
 OpenStax::RescueFrom.configure do |config|
@@ -60,10 +63,17 @@ OpenStax::RescueFrom.configure do |config|
 
   # Of course, you can append to the following lists and maps:
 
-  # config.exception_status_codes[key] = 'value'
-  # config.friendly_status_messages[key] = 'friendly value'
-  # config.non_notifying_exceptions += ['others']
-  # config.exception_extras[key] = ->(exception) { }
+  # config.exception_status_codes['ArgumentError'] = :unprocessable_entity
+
+  # config.friendly_status_messages[:bad_request] = 'Your request was not good.'
+
+  # config.non_notifying_exceptions += ['ArgumentError']
+
+  # config.exception_extras['ArgumentError'] = ->(exception) {
+  #   { headers: exception.response.headers,
+  #     status: exception.response.status,
+  #     body: exception.response.body }
+  # }
 end
 ```
 
@@ -73,28 +83,39 @@ See `OpenStax::RescueFrom::Configuration`
 
 https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
 
+# Default callback behavior
+
 ## HTML Response
 
-Renders the `errors/any` template in `./app/views` in the `application` layout. Install generator provides this template.
-
-Returns corresponding HTTP status code
+```ruby
+render template: config.html_template_path, layout: config.layout_name, status: wrapped_exception.status
+```
 
 ## JSON Response
 
-```json
-{ "error_id" : "some_generated_error_id_for_log_reference" }
-// with the corresponding HTTP status code
+```ruby
+render json: { error_id: wrapped_exception.error_id }, status: wrapped_exception.status
 ```
 
 ## All other formats
 
-Renders a blank response body with the corresponding HTTP status code
+```ruby
+render nothing: true, status: wrapped_exception
+```
 
 ## HTTP Status Codes
 
-See `OpenStax::RescueFrom::WrappedException::STATUS_MAP`
+See `OpenStax::RescueFrom::Configuration`
 
-https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/wrapped_exception.rb#L74
+https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
+
+## How it works (notes for gem developers)
+
+OpenStax::RescueFrom uses a `WrappedException` around the rescued exception for convenient access to information such as: `name`, `header`, `status`, `message`, and `error_id`
+
+From there, an `OpenStax::RescueFrom::Logger` is used to write customized entries to the configured `system_logger` and to do recursive logging for exceptions with causes
+
+`WrappedException` requires an Exception, and a Listener. The listener should be an instance of `ActionController::Base`, unless of course the developer provides a listener that responds to `#openstax_exception_rescue_callback(wrapped_exception)`, or similarly, you can overwrite this method in your controller.
 
 ## Development
 
