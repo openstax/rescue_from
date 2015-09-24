@@ -41,7 +41,7 @@ module OpenStax
               error_id: wrapped.error_id,
               :class => wrapped.name,
               message: wrapped.message,
-              first_line_of_backtrace: wrapped.exception.backtrace.first,
+              first_line_of_backtrace: wrapped.first_backtrace_line,
               cause: wrapped.cause,
               dns_name: wrapped.dns_name,
               extras: wrapped.extras

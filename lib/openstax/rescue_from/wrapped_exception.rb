@@ -44,11 +44,15 @@ module OpenStax
       end
 
       def backtrace
-        @backtrace ||= if cause.blank?
-                         exception.backtrace.join("\n")
-                       else
-                         exception.backtrace.first
-                       end
+        @backtrace ||= cause.blank? ? all_backtrace_lines : first_backtrace_line
+      end
+
+      def all_backtrace_lines
+        @all_backtrace_lines ||= exception.backtrace.join("\n")
+      end
+
+      def first_backtrace_line
+        @first_backtrace_line ||= exception.backtrace.first
       end
 
       def status
