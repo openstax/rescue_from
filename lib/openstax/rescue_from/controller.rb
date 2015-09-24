@@ -21,8 +21,8 @@ module OpenStax
 
       def after_openstax_exception_rescue(proxy)
         respond_to do |f|
-          f.html { render template: openstax_rescue_config.html_template_path,
-                          layout: openstax_rescue_config.layout_name,
+          f.html { render template: openstax_rescue_config.html_error_template_path,
+                          layout: openstax_rescue_config.html_error_template_layout_name,
                           status: proxy.status }
 
           f.json { render json: { error_id: proxy.error_id }, status: proxy.status }

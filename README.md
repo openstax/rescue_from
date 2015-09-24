@@ -60,16 +60,23 @@ This configuration, which is placed in `./config/initializers/openstax_rescue_fr
 
 ```ruby
 OpenStax::RescueFrom.configure do |config|
-  config.raise_exceptions = Rails.application.config.consider_all_requests_local
+  config.raise_exceptions = ENV['RAISE_EXCEPTIONS'] ||
+                              Rails.application.config.consider_all_requests_local
+
   config.app_name = ENV['APP_NAME'] || 'Tutor'
   config.app_env = ENV['APP_ENV'] || 'DEV'
+
   config.logger = Rails.logger
   config.notifier = ExceptionNotifier
+
   config.html_error_template_path = 'errors/any'
   config.html_error_template_layout_name = 'application'
+
   config.email_prefix = "[#{app_name}] (#{app_env}) "
-  config.sender_address = ENV['EXCEPTION_SENDER'] || %{"OpenStax Tutor" <noreply@openstax.org>}
-  config.exception_recipients = ENV['EXCEPTION_RECIPIENTS'] || %w{tutor-notifications@openstax.org}
+  config.sender_address = ENV['EXCEPTION_SENDER'] ||
+                            %{"OpenStax Tutor" <noreply@openstax.org>}
+  config.exception_recipients = ENV['EXCEPTION_RECIPIENTS'] ||
+                                  %w{tutor-notifications@openstax.org}
 
   # Of course, you can append to the following lists and maps:
 
@@ -104,7 +111,7 @@ end
 
 def after_openstax_exception_rescue(exception_proxy)
   respond_to do |f|
-    f.html { render template: config.html_template_path, layout: config.layout_name, status: exception_proxy.status }
+    f.html { render template: config.html_error_template_path, layout: config.html_error_template_layout_name, status: exception_proxy.status }
     f.json { render json: { error_id: exception_proxy.error_id }, status: exception_proxy.status }
     f.all { render nothing: true, status: exception_proxy.status }
   end

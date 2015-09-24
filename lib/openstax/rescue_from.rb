@@ -1,9 +1,4 @@
 require 'openstax/rescue_from/configuration'
-require 'openstax/rescue_from/mute_listener'
-require 'openstax/rescue_from/logger'
-require 'openstax/rescue_from/error'
-require 'openstax/rescue_from/exception_proxy'
-require 'openstax/rescue_from/controller'
 
 module OpenStax
   module RescueFrom
@@ -13,7 +8,7 @@ module OpenStax
 
         listener.before_openstax_exception_rescue(proxy)
         log_system_error(proxy)
-        send_notifying_exceptions(proxy)
+        send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
       end
 
@@ -31,11 +26,11 @@ module OpenStax
         logger.record_system_error!
       end
 
-      def send_notifying_exceptions(proxy)
+      def send_notifying_exceptions(proxy, listener)
         if proxy.notify?
           configuration.notifier.notify_exception(
             proxy.exception,
-            env: request.env,
+            env: listener.request.env,
             data: {
               error_id: proxy.error_id,
               :class => proxy.name,

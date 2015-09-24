@@ -8,9 +8,9 @@ module OpenStax
       end
 
       def record_system_error!(prefix = "An exception occurred")
-        config.logger.error("#{prefix}: #{proxy.name} [#{proxy.error_id}] " +
-                            "<#{proxy.message}> #{proxy.extras}\n\n" +
-                            "#{proxy.backtrace}")
+        Rails.logger.error("#{prefix}: #{proxy.name} [#{proxy.error_id}] " +
+                           "<#{proxy.message}> #{proxy.extras}\n\n" +
+                           "#{proxy.backtrace}")
 
         record_system_error_recursively!
       end

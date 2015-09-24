@@ -4,7 +4,7 @@ module OpenStax
   module RescueFrom
     class Configuration
 
-      attr_accessor :raise_exceptions, :logger, :notifier, :html_error_template_path,
+      attr_accessor :raise_exceptions, :notifier, :html_error_template_path,
         :html_error_template_layout_name, :app_name, :app_env, :exception_status_codes,
         :non_notifying_exceptions, :exception_extras, :friendly_status_messages,
         :email_prefix, :sender_address, :exception_recipients
@@ -15,7 +15,6 @@ module OpenStax
         @app_name = ENV['APP_NAME'] || 'Tutor'
         @app_env = ENV['APP_ENV'] || 'DEV'
 
-        @logger = Rails.logger
         @notifier = ExceptionNotifier
 
         @html_error_template_path = 'errors/any'
