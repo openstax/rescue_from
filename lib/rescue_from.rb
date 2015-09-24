@@ -1,4 +1,3 @@
-require 'active_support/all'
 require 'exception_notification'
 
 require "openstax/rescue_from/configuration"
