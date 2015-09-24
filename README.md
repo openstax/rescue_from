@@ -108,7 +108,7 @@ def after_openstax_exception_rescue(wrapped_exception)
   end
 end
 
-# Just override these methods in your own controller/listener if you wish
+# Just override these methods in your own controller if you wish
 ```
 
 ## HTTP Status Codes
@@ -116,14 +116,6 @@ end
 See `OpenStax::RescueFrom::Configuration`
 
 https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
-
-## How it works (notes for gem developers)
-
-OpenStax::RescueFrom uses a `WrappedException` around the rescued exception for convenient access to information such as: `name`, `header`, `status`, `message`, and `error_id`
-
-From there, an `OpenStax::RescueFrom::Logger` is used to write customized entries to the configured `system_logger` and to do recursive logging for exceptions with causes
-
-`WrappedException` requires an Exception, and a Listener. The listener should be an instance of `ActionController::Base`, unless of course the developer provides a listener that responds to `#openstax_exception_rescue_callback(wrapped_exception)`, or similarly, you can overwrite this method in your controller.
 
 ## Development
 
