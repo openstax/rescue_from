@@ -11,24 +11,6 @@ module OpenStax
         end
       end
 
-      def before_openstax_exception_rescue(wrapped)
-        @message = wrapped.friendly_message
-        @code = wrapped.status_code
-        @error_id = wrapped.error_id
-      end
-
-      def after_openstax_exception_rescue(wrapped)
-        respond_to do |f|
-          f.html { render template: openstax_rescue_config.html_template_path,
-                          layout: openstax_rescue_config.layout_name,
-                          status: wrapped.status }
-
-          f.json { render json: { error_id: wrapped.error_id }, status: wrapped.status }
-
-          f.all { render nothing: true, status: wrapped.status }
-        end
-      end
-
       private
       def openstax_exception_rescue(exception)
         wrapped = WrappedException.new(exception)
@@ -37,6 +19,12 @@ module OpenStax
         record_system_error(wrapped)
         send_notifying_exceptions(wrapped)
         finish_exception_rescue(wrapped)
+      end
+
+      def before_openstax_exception_rescue(wrapped)
+        @message = wrapped.friendly_message
+        @code = wrapped.status_code
+        @error_id = wrapped.error_id
       end
 
       def record_system_error(wrapped)
@@ -68,6 +56,18 @@ module OpenStax
           raise wrapped.exception
         else
           after_openstax_exception_rescue(wrapped)
+        end
+      end
+
+      def after_openstax_exception_rescue(wrapped)
+        respond_to do |f|
+          f.html { render template: openstax_rescue_config.html_template_path,
+                          layout: openstax_rescue_config.layout_name,
+                          status: wrapped.status }
+
+          f.json { render json: { error_id: wrapped.error_id }, status: wrapped.status }
+
+          f.all { render nothing: true, status: wrapped.status }
         end
       end
 
