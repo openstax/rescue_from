@@ -7,12 +7,8 @@ module Test
       raise case params[:exception]
             when 'ActionController::RoutingError'
               exception.new('routing error')
-            when 'Apipie::ParamMissing'
-              exception.new('apipie error')
             when 'ActionView::MissingTemplate'
               exception.new(['some/path', 'other/path'], 'some/path', [], nil, '')
-            when 'OAuth2::Error'
-              exception.new(OAuth2::Response.new(Faraday::Response.new))
             else
               exception.new
             end
