@@ -16,7 +16,7 @@ module OpenStax
         wrapped = WrappedException.new(exception)
 
         before_openstax_exception_rescue(wrapped)
-        record_system_error(wrapped)
+        log_system_error(wrapped)
         send_notifying_exceptions(wrapped)
         finish_exception_rescue(wrapped)
       end
@@ -27,7 +27,7 @@ module OpenStax
         @error_id = wrapped.error_id
       end
 
-      def record_system_error(wrapped)
+      def log_system_error(wrapped)
         logger = Logger.new(wrapped)
         logger.record_system_error!
       end
