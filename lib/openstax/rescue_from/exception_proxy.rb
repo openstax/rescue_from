@@ -20,7 +20,8 @@ module OpenStax
       end
 
       def friendly_message
-        RescueFrom.friendly_status_messages[status]
+        RescueFrom.friendly_status_messages[status] ||
+          'There was an unspecified problem. Sorry.'
       end
 
       def dns_name
