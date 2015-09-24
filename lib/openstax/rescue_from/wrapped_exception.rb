@@ -3,24 +3,8 @@ module OpenStax
     class WrappedException
       attr_reader :exception
 
-      def initialize(exception:, listener: MuteListener.new)
+      def initialize(exception)
         @exception = exception
-        @listener = listener
-        @logger = Logger.new(wrapped: self)
-        @notifier = config.notifier
-      end
-
-      def rescue_exception!
-        listener.before_openstax_exception_rescue(self)
-
-        logger.record_system_error!
-        send_notifying_exceptions
-
-        if config.raise_exceptions
-          raise exception
-        else
-          listener.after_openstax_exception_rescue(self)
-        end
       end
 
       def header
@@ -80,27 +64,6 @@ module OpenStax
       end
 
       private
-      attr_reader :listener, :notifier, :logger
-
-      def send_notifying_exceptions
-        if notify?
-          notifier.notify_exception(
-            exception,
-            env: listener.request.env,
-            data: {
-              error_id: error_id,
-              :class => name,
-              message: message,
-              first_line_of_backtrace: exception.backtrace.first,
-              cause: cause,
-              dns_name: dns_name,
-              extras: extras
-            },
-            sections: %w(data request session environment backtrace)
-          )
-        end
-      end
-
       def config
         RescueFrom.configuration
       end

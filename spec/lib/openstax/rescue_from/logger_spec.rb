@@ -9,11 +9,14 @@ module OpenStax
       it 'recursively logs exceptions with causes' do
         cause = double(:caused, cause: nil).as_null_object
         exception = double(:exception, cause: cause).as_null_object
-        wrapper = WrappedException.new(exception: exception)
-        logger = described_class.new(wrapped: wrapper)
+
+        wrapped = WrappedException.new(exception)
+        logger = described_class.new(wrapped)
 
         allow(logger).to receive(:record_system_error!).and_call_original
+
         logger.record_system_error!
+
         expect(logger).to have_received(:record_system_error!).twice
       end
     end

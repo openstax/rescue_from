@@ -3,7 +3,7 @@ module OpenStax
     class Logger
       attr_reader :wrapped
 
-      def initialize(wrapped:)
+      def initialize(wrapped)
         @wrapped = wrapped
       end
 
@@ -18,7 +18,7 @@ module OpenStax
       private
       def record_system_error_recursively!
         if wrapped.cause
-          @wrapped = WrappedException.new(exception: wrapped.cause)
+          @wrapped = WrappedException.new(wrapped.cause)
           record_system_error!
         end
       end
