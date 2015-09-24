@@ -84,7 +84,7 @@ See `OpenStax::RescueFrom::Configuration`
 https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
 
 ## Default callback behavior
-``ruby
+```ruby
 #
 # Mixed in Controller module instance method
 #
