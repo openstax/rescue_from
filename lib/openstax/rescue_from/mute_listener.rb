@@ -1,10 +1,17 @@
 module OpenStax
   module RescueFrom
     class MuteListener
-      def openstax_exception_rescue_callback(wrapped)
+      def before_openstax_exception_rescue(wrapped)
         RescueFrom.configuration.system_logger.warn(
-          "MuteListener#openstax_exception_rescue_callback does " +
-          "nothing for WrappedException#error_id #=> #{wrapped.error_id}"
+          "MuteListener does nothing before rescuing " +
+          "WrappedException#error_id #=> #{wrapped.error_id}"
+        )
+      end
+
+      def after_openstax_exception_rescue(wrapped)
+        RescueFrom.configuration.system_logger.warn(
+          "MuteListener does nothing after rescuing " +
+          "WrappedException#error_id #=> #{wrapped.error_id}"
         )
       end
     end
