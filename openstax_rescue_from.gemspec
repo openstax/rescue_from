@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'openstax/rescue_from/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "rescue_from"
+  spec.name          = "openstax_rescue_from"
   spec.version       = OpenStax::RescueFrom::VERSION
   spec.authors       = ["JP Slavinsky", "Joe Sak"]
   spec.email         = ["jps@kindlinglabs.com", "joe@avant-gardelabs.com"]

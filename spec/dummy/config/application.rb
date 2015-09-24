@@ -9,7 +9,7 @@ require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 Bundler.require(*Rails.groups)
-require "rescue_from"
+require "openstax_rescue_from"
 
 module Dummy
   class Application < Rails::Application
