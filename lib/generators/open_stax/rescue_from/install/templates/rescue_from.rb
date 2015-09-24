@@ -5,7 +5,7 @@ OpenStax::RescueFrom.configure do |config|
 
   # config.application_name = 'Tutor'
 
-  # config.system_logger = Rails.logger
+  # config.logger = Rails.logger
 
   # config.notifier = ExceptionNotifier
 

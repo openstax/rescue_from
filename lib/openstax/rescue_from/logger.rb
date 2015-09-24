@@ -8,9 +8,9 @@ module OpenStax
       end
 
       def record_system_error!
-        config.system_logger.error("#{wrapped.header}: #{wrapped.name} " +
-                                   "[#{wrapped.error_id}] <#{wrapped.message}> " +
-                                   "#{wrapped.extras}\n\n#{wrapped.backtrace}")
+        config.logger.error("#{wrapped.header}: #{wrapped.name} " +
+                            "[#{wrapped.error_id}] <#{wrapped.message}> " +
+                            "#{wrapped.extras}\n\n#{wrapped.backtrace}")
 
         record_system_error_recursively!
       end
