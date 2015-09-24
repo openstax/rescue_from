@@ -1,12 +1,12 @@
 module OpenStax
   module RescueFrom
     class WrappedException
-      attr_reader :exception, :listener
+      attr_reader :exception
 
-      def initialize(exception:, listener: nil, logger: Logger.new(wrapped: self))
+      def initialize(exception:, listener: MuteListener.new)
         @exception = exception
         @listener = listener
-        @logger = logger
+        @logger = Logger.new(wrapped: self)
         @notifier = config.notifier
       end
 
@@ -17,7 +17,7 @@ module OpenStax
         if config.raise_exceptions
           raise exception
         else
-          listener_response
+          listener.openstax_exception_rescue_callback(self)
         end
       end
 
@@ -66,7 +66,7 @@ module OpenStax
       end
 
       def status
-        @status ||= config.exception_statuses[exception.class.name]
+        @status ||= config.exception_status_codes[exception.class.name]
       end
 
       def status_code
@@ -78,23 +78,7 @@ module OpenStax
       end
 
       private
-      attr_reader :notifier, :logger
-
-      def listener_response
-        if listener
-          listener.respond_to do |f|
-            f.html { listener.render template: config.html_template_path,
-                                     layout: config.layout_name,
-                                     status: status }
-
-            f.json { listener.render json: { error_id: error_id },
-                                     status: status }
-
-            f.all { listener.render nothing: true,
-                                    status: status }
-          end
-        end
-      end
+      attr_reader :listener, :notifier, :logger
 
       def send_notifying_exceptions
         if notify?

@@ -26,13 +26,13 @@ Run the install generator to get the config initializer, the error template, and
 $ rails g open_stax:rescue_from:install
 ```
 
-Just declare the openstax exception rescuer in your controller, preferably your `ApplicationController`
+Just declare that you want to use the openstax exception rescuer in your controller, preferably your `ApplicationController`
 
 ```ruby
 class ApplicationController < ActionController::Base
   # ...
 
-  openstax_exception_rescue
+  use_openstax_exception_rescue
 
   # ...
 end
@@ -44,7 +44,7 @@ OpenStax::RescueFrom uses a `WrappedException` around the rescued exception for 
 
 From there, an `OpenStax::RescueFrom::Logger` is used to write customized entries to the configured `system_logger` and to do recursive logging for exceptions with causes
 
-`WrappedException` requires an Exception, and a Listener. The listener should be an instance of `ActionController::Base`, unless of course the developer can provide a listener that can handle a `#respond_to` block and `#render` method similar to `ActionController::Base`, but this is currently not configurable anyway.
+`WrappedException` requires an Exception, and a Listener. The listener should be an instance of `ActionController::Base`, unless of course the developer provides a listener that responds to `#openstax_exception_rescue_callback(wrapped_exception)`, or similarly, you can overwrite this method in your controller.
 
 ## Configuration
 
@@ -57,8 +57,21 @@ OpenStax::RescueFrom.configure do |config|
   config.notifier = ExceptionNotifier      # Any notifier that takes an exception in a #notify_exception method will work
   config.html_template_path = 'errors/any' # The template path for the HTML response
   config.layout_name = 'application'       # The layout name for the HTML response
+
+  # Of course, you can append to the following lists and maps:
+
+  # config.exception_status_codes[key] = 'value'
+  # config.friendly_status_messages[key] = 'friendly value'
+  # config.non_notifying_exceptions += ['others']
+  # config.exception_extras[key] = ->(exception) { }
 end
 ```
+
+## Exceptions lists and status code maps
+
+See `OpenStax::RescueFrom::Configuration`
+
+https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
 
 ## HTML Response
 
@@ -81,7 +94,7 @@ Renders a blank response body with the corresponding HTTP status code
 
 See `OpenStax::RescueFrom::WrappedException::STATUS_MAP`
 
-Located as of this writing, https://github.com/openstax/rescue_from/blob/implement-exception-emails/lib/openstax/rescue_from/wrapped_exception.rb#L74
+https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/wrapped_exception.rb#L74
 
 ## Development
 

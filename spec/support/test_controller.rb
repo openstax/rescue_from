@@ -1,6 +1,6 @@
 module Test
   class TestController < ActionController::Base
-    openstax_exception_rescue
+    use_openstax_exception_rescue
 
     def bad_action
       exception = params[:exception].constantize

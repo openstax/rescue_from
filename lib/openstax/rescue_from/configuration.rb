@@ -3,7 +3,7 @@ module OpenStax
     class Configuration
 
       attr_accessor :raise_exceptions, :system_logger, :notifier,
-        :html_template_path, :layout_name, :application_name, :exception_statuses,
+        :html_template_path, :layout_name, :application_name, :exception_status_codes,
         :non_notifying_exceptions, :exception_extras,:friendly_status_messages
 
       def initialize
@@ -14,7 +14,7 @@ module OpenStax
         @html_template_path = 'errors/any'
         @layout_name = 'application'
 
-        @exception_statuses = Hash.new(:internal_server_error).merge({
+        @exception_status_codes = Hash.new(:internal_server_error).merge({
           'SecurityTransgression' => :forbidden,
           'ActiveRecord::RecordNotFound' => :not_found,
           'ActionController::RoutingError' => :not_found,
@@ -25,7 +25,7 @@ module OpenStax
           'ActionView::MissingTemplate' => :bad_request,
         })
 
-        @non_notifying_exceptions = Set.new [
+        @non_notifying_exceptions = [
           'SecurityTransgression',
           'ActiveRecord::RecordNotFound',
           'ActionController::RoutingError',
@@ -43,7 +43,6 @@ module OpenStax
               body: exception.response.body }
           end
         }
-
 
         @friendly_status_messages = {
           forbidden: "You are not allowed to access this.",

@@ -28,7 +28,7 @@ module Test
       end
     end
 
-    (Set.new(['OAuth2::Error']) +
+    (['OAuth2::Error'] +
       OpenStax::RescueFrom.configuration.non_notifying_exceptions).each do |ex|
       it "logs the #{ex} exception" do
         allow(Rails.logger).to receive(:error)
@@ -55,7 +55,7 @@ module Test
       OpenStax::RescueFrom.configuration.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex
 
-        expected_status = OpenStax::RescueFrom.configuration.exception_statuses[ex]
+        expected_status = OpenStax::RescueFrom.configuration.exception_status_codes[ex]
 
         expect(response).to render_template('errors/any')
         expect(response).to have_http_status(expected_status),
@@ -67,7 +67,7 @@ module Test
       OpenStax::RescueFrom.configuration.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex, format: :json
 
-        expected_status = OpenStax::RescueFrom.configuration.exception_statuses[ex]
+        expected_status = OpenStax::RescueFrom.configuration.exception_status_codes[ex]
 
         expect(JSON.parse(response.body)).to eq({ 'error_id' => '%06d123' })
         expect(response).to have_http_status(expected_status),
@@ -81,7 +81,7 @@ module Test
       OpenStax::RescueFrom.configuration.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex, format: formats.sample
 
-        expected_status = OpenStax::RescueFrom.configuration.exception_statuses[ex]
+        expected_status = OpenStax::RescueFrom.configuration.exception_status_codes[ex]
 
         expect(response.body).to be_blank
         expect(response).to have_http_status(expected_status),
