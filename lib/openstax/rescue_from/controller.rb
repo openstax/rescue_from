@@ -7,12 +7,12 @@ module OpenStax
 
       module ClassMethods
         def use_openstax_exception_rescue
-          rescue_from Exception, with: RescueFrom.perform_rescue(exception: exception,
-                                                                 listener: self)
+          rescue_from Exception do |exception|
+            RescueFrom.perform_rescue(exception: exception, listener: self)
+          end
         end
       end
 
-      private
       def before_openstax_exception_rescue(proxy)
         @message = proxy.friendly_message
         @code = proxy.status_code
@@ -31,6 +31,7 @@ module OpenStax
         end
       end
 
+      private
       def openstax_rescue_config
         RescueFrom.configuration
       end

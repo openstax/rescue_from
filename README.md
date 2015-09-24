@@ -61,30 +61,21 @@ This configuration, which is placed in `./config/initializers/openstax_rescue_fr
 ```ruby
 OpenStax::RescueFrom.configure do |config|
   config.raise_exceptions = Rails.application.config.consider_all_requests_local
-    # Don't render the friendly template for local development
+  config.app_name = ENV['APP_NAME'] || 'Tutor'
+  config.app_env = ENV['APP_ENV'] || 'DEV'
   config.logger = Rails.logger
-    # Any logger that takes a string in an #error method will work
   config.notifier = ExceptionNotifier
-    # Any notifier that takes an exception in a #notify_exception method will work
-  config.html_template_path = 'errors/any'
-    # The template path for the HTML response
-  config.layout_name = 'application'
-    # The layout name for the HTML response
-  config.email_prefix = "[#{application_name}] (#{Server.nickname}) "
-    # Email subject line for the notifier
-  config.sender_address = %{"OpenStax Tutor" <noreply@openstax.org>}
-    # Email sender for the notifier
-  config.exception_recipients = %w{tutor-notifications@openstax.org}
-    # Email recipients for the notifier
+  config.html_error_template_path = 'errors/any'
+  config.html_error_template_layout_name = 'application'
+  config.email_prefix = "[#{app_name}] (#{app_env}) "
+  config.sender_address = ENV['EXCEPTION_SENDER'] || %{"OpenStax Tutor" <noreply@openstax.org>}
+  config.exception_recipients = ENV['EXCEPTION_RECIPIENTS'] || %w{tutor-notifications@openstax.org}
 
   # Of course, you can append to the following lists and maps:
 
   # config.exception_status_codes['ArgumentError'] = :unprocessable_entity
-
   # config.friendly_status_messages[:bad_request] = 'Your request was not good.'
-
   # config.non_notifying_exceptions += ['ArgumentError']
-
   # config.exception_extras['ArgumentError'] = ->(exception) {
   #   { headers: exception.response.headers,
   #     status: exception.response.status,
