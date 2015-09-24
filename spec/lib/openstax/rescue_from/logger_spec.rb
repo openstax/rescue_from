@@ -17,7 +17,8 @@ module OpenStax
 
         logger.record_system_error!
 
-        expect(logger).to have_received(:record_system_error!).twice
+        expect(logger).to have_received(:record_system_error!).with(no_args).once
+        expect(logger).to have_received(:record_system_error!).with("Exception cause").once
       end
     end
   end

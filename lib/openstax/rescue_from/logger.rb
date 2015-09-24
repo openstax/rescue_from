@@ -7,10 +7,10 @@ module OpenStax
         @wrapped = wrapped
       end
 
-      def record_system_error!
-        config.logger.error("#{wrapped.header}: #{wrapped.name} " +
-                            "[#{wrapped.error_id}] <#{wrapped.message}> " +
-                            "#{wrapped.extras}\n\n#{wrapped.backtrace}")
+      def record_system_error!(prefix = "An exception occurred")
+        config.logger.error("#{prefix}: #{wrapped.name} [#{wrapped.error_id}] " +
+                            "<#{wrapped.message}> #{wrapped.extras}\n\n" +
+                            "#{wrapped.backtrace}")
 
         record_system_error_recursively!
       end
@@ -19,7 +19,7 @@ module OpenStax
       def record_system_error_recursively!
         if wrapped.cause
           @wrapped = WrappedException.new(wrapped.cause)
-          record_system_error!
+          record_system_error!("Exception cause")
         end
       end
 

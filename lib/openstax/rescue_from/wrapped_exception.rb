@@ -7,10 +7,6 @@ module OpenStax
         @exception = exception
       end
 
-      def header
-        @header ||= cause.blank? ? 'An exception occurred' : 'Exception cause'
-      end
-
       def name
         @name ||= exception.class.name
       end
