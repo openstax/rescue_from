@@ -1,14 +1,13 @@
 module OpenStax
   module RescueFrom
     class WrappedException
-      attr_reader :exception, :listener, :logger, :notifier
+      attr_reader :exception, :listener
 
-      def initialize(exception:, listener: nil, notifier: config.notifier,
-                                                logger: Logger.new(wrapped: self))
+      def initialize(exception:, listener: nil, logger: Logger.new(wrapped: self))
         @exception = exception
         @listener = listener
         @logger = logger
-        @notifier = notifier
+        @notifier = config.notifier
       end
 
       def handle_exception!
@@ -38,12 +37,16 @@ module OpenStax
         @message ||= exception.message
       end
 
+      def friendly_message
+        config.friendly_status_messages[status]
+      end
+
       def dns_name
         @dns_name ||= Resolv.getname(listener.request.remote_ip) rescue 'unknown'
       end
 
       def extras
-        @extras ||= if extras_proc = EXTRAS_MAP[exception.class.name]
+        @extras ||= if extras_proc = config.exception_extras[exception.class.name]
                       extras_proc.call(exception)
                     else
                       "{}"
@@ -63,44 +66,20 @@ module OpenStax
       end
 
       def status
-        @status ||= STATUS_MAP[exception.class.name]
+        @status ||= config.exception_statuses[exception.class.name]
+      end
+
+      def status_code
+        @status_code ||= Rack::Utils.status_code(status)
       end
 
       def notify?
-        not NON_NOTIFYING.include?(name)
+        not config.non_notifying_exceptions.include?(name)
       end
 
-      NON_NOTIFYING = Set.new [
-        'SecurityTransgression',
-        'ActiveRecord::RecordNotFound',
-        'ActionController::RoutingError',
-        'ActionController::UnknownController',
-        'AbstractController::ActionNotFound',
-        'ActionController::InvalidAuthenticityToken',
-        'Apipie::ParamMissing',
-        'ActionView::MissingTemplate'
-      ]
-
-      STATUS_MAP = Hash.new(:internal_server_error).merge({
-        'SecurityTransgression' => :forbidden,
-        'ActiveRecord::RecordNotFound' => :not_found,
-        'ActionController::RoutingError' => :not_found,
-        'ActionController::UnknownController' => :not_found,
-        'AbstractController::ActionNotFound' => :not_found,
-        'ActionController::InvalidAuthenticityToken' => :unprocessable_entity,
-        'Apipie::ParamMissing' => :unprocessable_entity,
-        'ActionView::MissingTemplate' => :bad_request,
-      })
-
-      EXTRAS_MAP = {
-        'OAuth2::Error' => ->(exception) do
-          { headers: exception.response.headers,
-            status: exception.response.status,
-            body: exception.response.body }
-        end
-      }
-
       private
+      attr_reader :notifier, :logger
+
       def listener_response
         if listener
           listener.respond_to do |f|
@@ -137,7 +116,7 @@ module OpenStax
       end
 
       def config
-        OpenStax::RescueFrom.configuration
+        RescueFrom.configuration
       end
     end
   end

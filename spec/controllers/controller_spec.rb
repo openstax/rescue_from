@@ -20,7 +20,7 @@ module Test
       end
 
       it 'raises the exceptions' do
-        OpenStax::RescueFrom::WrappedException::NON_NOTIFYING.each do |ex|
+        OpenStax::RescueFrom.configuration.non_notifying_exceptions.each do |ex|
           expect {
             get :bad_action, exception: ex
           }.to raise_error(ex.constantize)
@@ -29,11 +29,11 @@ module Test
     end
 
     (Set.new(['OAuth2::Error']) +
-      OpenStax::RescueFrom::WrappedException::NON_NOTIFYING).each do |ex|
+      OpenStax::RescueFrom.configuration.non_notifying_exceptions).each do |ex|
       it "logs the #{ex} exception" do
         allow(Rails.logger).to receive(:error)
 
-        extras = if extras_proc = OpenStax::RescueFrom::WrappedException::EXTRAS_MAP[ex]
+        extras = if extras_proc = OpenStax::RescueFrom.configuration.exception_extras[ex]
                    allow(extras_proc).to receive(:call) { 'found extras' }
                    'found extras'
                  else
@@ -51,11 +51,11 @@ module Test
       end
     end
 
-    it 'intercepts OpenStax::RescueFrom::WrappedException::NON_NOTIFYING' do
-      OpenStax::RescueFrom::WrappedException::NON_NOTIFYING.each do |ex|
+    it 'intercepts non notifying exceptions' do
+      OpenStax::RescueFrom.configuration.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex
 
-        expected_status = OpenStax::RescueFrom::WrappedException::STATUS_MAP[ex]
+        expected_status = OpenStax::RescueFrom.configuration.exception_statuses[ex]
 
         expect(response).to render_template('errors/any')
         expect(response).to have_http_status(expected_status),
@@ -64,10 +64,10 @@ module Test
     end
 
     it 'intercepts these non notifying exceptions for json requests' do
-      OpenStax::RescueFrom::WrappedException::NON_NOTIFYING.each do |ex|
+      OpenStax::RescueFrom.configuration.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex, format: :json
 
-        expected_status = OpenStax::RescueFrom::WrappedException::STATUS_MAP[ex]
+        expected_status = OpenStax::RescueFrom.configuration.exception_statuses[ex]
 
         expect(JSON.parse(response.body)).to eq({ 'error_id' => '%06d123' })
         expect(response).to have_http_status(expected_status),
@@ -78,10 +78,10 @@ module Test
     it 'intercepts non notifying exception for other formats with just the status' do
       formats = [:xsl, :php, :doc, :pdf, :csv, :xml]
 
-      OpenStax::RescueFrom::WrappedException::NON_NOTIFYING.each do |ex|
+      OpenStax::RescueFrom.configuration.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex, format: formats.sample
 
-        expected_status = OpenStax::RescueFrom::WrappedException::STATUS_MAP[ex]
+        expected_status = OpenStax::RescueFrom.configuration.exception_statuses[ex]
 
         expect(response.body).to be_blank
         expect(response).to have_http_status(expected_status),
@@ -98,7 +98,7 @@ module Test
     it 'does not send emails for non-notifying exceptions' do
       ActionMailer::Base.deliveries.clear
 
-      OpenStax::RescueFrom::WrappedException::NON_NOTIFYING.each do |ex|
+      OpenStax::RescueFrom.configuration.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex
         expect(ActionMailer::Base.deliveries).to be_empty
       end

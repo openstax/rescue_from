@@ -24,7 +24,7 @@ module OpenStax
       end
 
       def config
-        OpenStax::RescueFrom.configuration
+        RescueFrom.configuration
       end
     end
   end
