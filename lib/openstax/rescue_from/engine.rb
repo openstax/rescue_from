@@ -11,11 +11,13 @@ module OpenStax
         ActionController::Base.send :include, RescueFrom::Controller
       end
 
-      middleware.use ExceptionNotification::Rack, email: {
-        email_prefix: RescueFrom.configuration.email_prefix,
-        sender_address: RescueFrom.configuration.sender_address,
-        exception_recipients: RescueFrom.configuration.exception_recipients
-      }
+      initializer "openstax.rescue_from.use_exception_notification_middleware" do
+        Rails.application.config.middleware.use ExceptionNotification::Rack, email: {
+          email_prefix: RescueFrom.configuration.email_prefix,
+          sender_address: RescueFrom.configuration.sender_address,
+          exception_recipients: RescueFrom.configuration.exception_recipients
+        }
+      end
     end
   end
 end

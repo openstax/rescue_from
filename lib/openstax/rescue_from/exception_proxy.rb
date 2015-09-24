@@ -20,7 +20,7 @@ module OpenStax
       end
 
       def friendly_message
-        config.friendly_status_messages[status]
+        RescueFrom.friendly_status_messages[status]
       end
 
       def dns_name
@@ -28,10 +28,10 @@ module OpenStax
       end
 
       def extras
-        @extras ||= if extras_proc = config.exception_extras[exception.class.name]
+        @extras ||= if extras_proc = RescueFrom.exception_extras[exception.class.name]
                       extras_proc.call(exception)
                     else
-                      "{}"
+                      {}
                     end
       end
 
@@ -52,7 +52,8 @@ module OpenStax
       end
 
       def status
-        @status ||= config.exception_status_codes[exception.class.name]
+        @status ||= RescueFrom.exception_status_codes[exception.class.name] ||
+                      :internal_server_error
       end
 
       def status_code
@@ -60,12 +61,7 @@ module OpenStax
       end
 
       def notify?
-        not config.non_notifying_exceptions.include?(name)
-      end
-
-      private
-      def config
-        RescueFrom.configuration
+        not RescueFrom.non_notifying_exceptions.include?(name)
       end
     end
   end

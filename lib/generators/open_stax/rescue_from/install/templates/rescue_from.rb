@@ -29,3 +29,30 @@ OpenStax::RescueFrom.configure do |config|
   #     body: exception.response.body }
   # }
 end
+
+# OpenStax::RescueFrom#register_exception default options:
+#
+# { notify: false,
+#   status: :internal_server_error,
+#   extras: ->(exception) { {} } }
+
+# OpenStax::RescueFrom.register_exception(SecurityTransgression,
+#                                         notify: false,
+#                                         status: :forbidden)
+#
+# OpenStax::RescueFrom.register_exception(ActiveRecord::NotFound,
+#                                         notify: false,
+#                                         status: :not_found)
+#
+# OpenStax::RescueFrom.register_exception(OAuth2::Error,
+#                                         notify: true,
+#                                         extras: ->(exception) {
+#                                           { headers: exception.response.headers,
+#                                             status: exception.response.status,
+#                                             body: exception.response.body }
+#
+# OpenStax::RescueFrom.translate_status_codes({
+#   forbidden: "You are not allowed to access this.",
+#   :not_found => "We couldn't find what you asked for.",
+#   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
+# })

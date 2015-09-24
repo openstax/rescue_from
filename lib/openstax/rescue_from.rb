@@ -3,6 +3,12 @@ require 'openstax/rescue_from/configuration'
 module OpenStax
   module RescueFrom
     class << self
+      @@registered_exceptions = []
+      @@non_notifying_exceptions = []
+      @@friendly_status_messages = {}
+      @@exception_status_codes = {}
+      @@exception_extras = {}
+
       def perform_rescue(exception:, listener: MuteListener.new)
         proxy = ExceptionProxy.new(exception)
 
@@ -10,6 +16,44 @@ module OpenStax
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
+      end
+
+      def registered_exceptions
+        @@registered_exceptions
+      end
+
+      def non_notifying_exceptions
+        @@non_notifying_exceptions
+      end
+
+      def friendly_status_messages
+        @@friendly_status_messages
+      end
+
+      def exception_status_codes
+        @@exception_status_codes
+      end
+
+      def exception_extras
+        @@exception_extras
+      end
+
+      def register_exception(exception, options = {})
+        options.stringify_keys!
+        options = { 'notify' => false,
+                    'status' => :internal_server_error,
+                    'extras' => ->(exception) { {} } }.merge(options)
+
+        @@registered_exceptions << exception.name
+        @@non_notifying_exceptions << exception.name unless options['notify']
+        @@exception_status_codes[exception.name] = options['status']
+        @@exception_extras[exception.name] = options['extras']
+      end
+
+      def translate_status_codes(map = {})
+        map.each do |k, v|
+          @@friendly_status_messages[k] = v
+        end
       end
 
       def configure

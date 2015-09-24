@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-Run the install generator to get the config initializer, the error template, and the configured middleware per environment
+Run the install generator to get the config initializer
 
 ```
 $ rails g open_stax:rescue_from:install
@@ -77,25 +77,49 @@ OpenStax::RescueFrom.configure do |config|
                             %{"OpenStax Tutor" <noreply@openstax.org>}
   config.exception_recipients = ENV['EXCEPTION_RECIPIENTS'] ||
                                   %w{tutor-notifications@openstax.org}
-
-  # Of course, you can append to the following lists and maps:
-
-  # config.exception_status_codes['ArgumentError'] = :unprocessable_entity
-  # config.friendly_status_messages[:bad_request] = 'Your request was not good.'
-  # config.non_notifying_exceptions += ['ArgumentError']
-  # config.exception_extras['ArgumentError'] = ->(exception) {
-  #   { headers: exception.response.headers,
-  #     status: exception.response.status,
-  #     body: exception.response.body }
-  # }
 end
 ```
 
-## Exceptions lists and status code maps
+## Registering exceptions
 
-See `OpenStax::RescueFrom::Configuration`
+In `./config/initializers/rescue_from.rb` it is recommended you register your exceptions
 
-https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
+```ruby
+require 'openstax_rescue_from'
+
+OpenStax::RescueFrom.configure do |c|
+  # c.app_name ...
+end
+
+OpenStax::RescueFrom.register_exception(SecurityTransgression, notify: false, status: :forbidden)
+
+OpenStax::RescueFrom.register_exception(ActiveRecord::RecordNotFound, notify: false, status: :not_found)
+
+OpenStax::RescueFrom.register_exception(OAuth2::Error, notify: true, extras: ->(exception) { 'found extras' })
+
+OpenStax::RescueFrom.translate_status_codes({
+  forbidden: "You are not allowed to access this.",
+  :not_found => "We couldn't find what you asked for.",
+  internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
+})
+```
+
+## Override the views
+
+You can either declare your own template path variables:
+
+```ruby
+OpenStax::RescueFrom.configure do |config|
+  config.html_error_template_path = 'my/path'
+  config.html_error_template_layout_name = 'my_layout'
+end
+```
+
+or, you can generate the views into the default path:
+
+```
+$ rails g open_stax:rescue_from:views
+```
 
 ## Controller before/after hooks
 ```ruby
@@ -120,12 +144,6 @@ end
 # Just override these methods in your own controller if you wish
 ```
 
-## HTTP Status Codes
-
-See `OpenStax::RescueFrom::Configuration`
-
-https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
-
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
@@ -136,8 +154,6 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/openstax/rescue_from.
 
-
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
