@@ -1,24 +1,24 @@
 module OpenStax
   module RescueFrom
     class Logger
-      attr_reader :wrapped
+      attr_reader :proxy
 
-      def initialize(wrapped)
-        @wrapped = wrapped
+      def initialize(proxy)
+        @proxy = proxy
       end
 
       def record_system_error!(prefix = "An exception occurred")
-        config.logger.error("#{prefix}: #{wrapped.name} [#{wrapped.error_id}] " +
-                            "<#{wrapped.message}> #{wrapped.extras}\n\n" +
-                            "#{wrapped.backtrace}")
+        config.logger.error("#{prefix}: #{proxy.name} [#{proxy.error_id}] " +
+                            "<#{proxy.message}> #{proxy.extras}\n\n" +
+                            "#{proxy.backtrace}")
 
         record_system_error_recursively!
       end
 
       private
       def record_system_error_recursively!
-        if wrapped.cause
-          @wrapped = WrappedException.new(wrapped.cause)
+        if proxy.cause
+          @proxy = ExceptionProxy.new(proxy.cause)
           record_system_error!("Exception cause")
         end
       end

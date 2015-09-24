@@ -1,6 +1,6 @@
 require 'rails_helper'
 require './spec/support/exceptions_list'
-require 'openstax/rescue_from/wrapped_exception'
+require 'openstax/rescue_from/exception_proxy'
 require 'openstax/rescue_from/logger'
 
 module OpenStax
@@ -10,8 +10,8 @@ module OpenStax
         cause = double(:caused, cause: nil).as_null_object
         exception = double(:exception, cause: cause).as_null_object
 
-        wrapped = WrappedException.new(exception)
-        logger = described_class.new(wrapped)
+        proxy = ExceptionProxy.new(exception)
+        logger = described_class.new(proxy)
 
         allow(logger).to receive(:record_system_error!).and_call_original
 

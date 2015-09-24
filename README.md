@@ -41,14 +41,14 @@ class ApplicationController < ActionController::Base
   # (See 'Controller before/after hooks')
   #
   # private
-  # def before_openstax_exception_rescue(wrapped_exception)
+  # def before_openstax_exception_rescue(exception_proxy)
   #   # noop
   # end
   #
-  # def after_openstax_exception_rescue(wrapped_exception)
+  # def after_openstax_exception_rescue(exception_proxy)
   #   respond_to do |f|
   #     f.xml { render text: "I respond strangely to the XML format!",
-  #                    status: wrapped_exception.status }
+  #                    status: exception_proxy.status }
   #   end
   # end
 end
@@ -94,17 +94,17 @@ https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/con
 # Mixed in Controller module instance methods
 #
 
-def before_openstax_exception_rescue(wrapped_exception)
-  @message = wrapped_exception.friendly_message
-  @status = wrapped_exception.status
-  @error_id = wrapped_exception.error_id
+def before_openstax_exception_rescue(exception_proxy)
+  @message = exception_proxy.friendly_message
+  @status = exception_proxy.status
+  @error_id = exception_proxy.error_id
 end
 
-def after_openstax_exception_rescue(wrapped_exception)
+def after_openstax_exception_rescue(exception_proxy)
   respond_to do |f|
-    f.html { render template: config.html_template_path, layout: config.layout_name, status: wrapped_exception.status }
-    f.json { render json: { error_id: wrapped_exception.error_id }, status: wrapped_exception.status }
-    f.all { render nothing: true, status: wrapped_exception.status }
+    f.html { render template: config.html_template_path, layout: config.layout_name, status: exception_proxy.status }
+    f.json { render json: { error_id: exception_proxy.error_id }, status: exception_proxy.status }
+    f.all { render nothing: true, status: exception_proxy.status }
   end
 end
 

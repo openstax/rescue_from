@@ -1,6 +1,6 @@
 module OpenStax
   module RescueFrom
-    class WrappedException
+    class ExceptionProxy
       attr_reader :exception
 
       def initialize(exception)
