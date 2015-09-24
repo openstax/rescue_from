@@ -37,10 +37,14 @@ class ApplicationController < ActionController::Base
 
   # ...
 
-  # Override this function and respond how you see fit
-  # (See 'Default callback behavior')
+  # Override the before and after hooks if you want to
+  # (See 'Controller before/after hooks')
   #
-  # def openstax_exception_rescue_callback(wrapped_exception)
+  # def before_openstax_exception_rescue(wrapped_exception)
+  #   # noop
+  # end
+  #
+  # def after_openstax_exception_rescue(wrapped_exception)
   #   respond_to do |f|
   #     f.xml { render text: "I respond strangely to the XML format!",
   #                    status: wrapped_exception.status }
@@ -83,13 +87,19 @@ See `OpenStax::RescueFrom::Configuration`
 
 https://github.com/openstax/rescue_from/blob/master/lib/openstax/rescue_from/configuration.rb#L17
 
-## Default callback behavior
+## Controller before/after hooks
 ```ruby
 #
-# Mixed in Controller module instance method
+# Mixed in Controller module instance methods
 #
 
-def openstax_exception_rescue_callback(wrapped_exception)
+def before_openstax_exception_rescue(wrapped_exception)
+  @message = wrapped_exception.friendly_message
+  @status = wrapped_exception.status
+  @error_id = wrapped_exception.error_id
+end
+
+def after_openstax_exception_rescue(wrapped_exception)
   respond_to do |f|
     f.html { render template: config.html_template_path, layout: config.layout_name, status: wrapped_exception.status }
     f.json { render json: { error_id: wrapped_exception.error_id }, status: wrapped_exception.status }
@@ -97,7 +107,7 @@ def openstax_exception_rescue_callback(wrapped_exception)
   end
 end
 
-# Just override this method in your own controller/listener
+# Just override these methods in your own controller/listener if you wish
 ```
 
 ## HTTP Status Codes

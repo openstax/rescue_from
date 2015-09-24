@@ -10,14 +10,16 @@ module OpenStax
         @notifier = config.notifier
       end
 
-      def handle_exception!
+      def rescue_exception!
+        listener.before_openstax_exception_rescue(self)
+
         logger.record_system_error!
         send_notifying_exceptions
 
         if config.raise_exceptions
           raise exception
         else
-          listener.openstax_exception_rescue_callback(self)
+          listener.after_openstax_exception_rescue(self)
         end
       end
 
