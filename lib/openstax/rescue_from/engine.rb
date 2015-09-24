@@ -8,7 +8,7 @@ module OpenStax
       end
 
       initializer "openstax.rescue_from.action_controller" do
-        ActionController::Base.send :include, RescueFrom
+        ActionController::Base.send :include, RescueFrom::Controller
       end
     end
   end
