@@ -14,4 +14,4 @@ before_script:
   - export OXT_DB_USER=postgres
   - export OXT_DB_PASS=
   - export OXT_TEST_DB=travis_ci_test
-  - bundle exec rake db:create:all db:migrate
+  - cd spec/dummy; bundle exec bin/rake db:create:all db:migrate
