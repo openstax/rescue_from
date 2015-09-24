@@ -1,10 +1,14 @@
+require 'exception_notification'
+require 'openstax/rescue_from/server'
+
 module OpenStax
   module RescueFrom
     class Configuration
 
       attr_accessor :raise_exceptions, :logger, :notifier,
         :html_template_path, :layout_name, :application_name, :exception_status_codes,
-        :non_notifying_exceptions, :exception_extras,:friendly_status_messages
+        :non_notifying_exceptions, :exception_extras,:friendly_status_messages,
+        :email_prefix, :sender_address, :exception_recipients
 
       def initialize
         @raise_exceptions = false
@@ -13,6 +17,9 @@ module OpenStax
         @notifier = ExceptionNotifier
         @html_template_path = 'errors/any'
         @layout_name = 'application'
+        @email_prefix = "[#{application_name}] (#{Server.nickname}) "
+        @sender_address = %{"OpenStax Tutor" <noreply@openstax.org>}
+        @exception_recipients = %w{tutor-notifications@openstax.org}
 
         @exception_status_codes = Hash.new(:internal_server_error).merge({
           'SecurityTransgression' => :forbidden,

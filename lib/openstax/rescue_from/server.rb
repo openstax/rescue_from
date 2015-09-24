@@ -1,7 +1,7 @@
 module OpenStax
   module RescueFrom
-    class DeployUtils
-      def self.server_nickname
+    class Server
+      def self.nickname
         url = Rails.application.secrets.mail_site_url || 'unknown deploy'
         match = url.match(/\Atutor-(.+)\.openstax/)
 

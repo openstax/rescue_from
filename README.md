@@ -60,11 +60,22 @@ This configuration, which is placed in `./config/initializers/openstax_rescue_fr
 
 ```ruby
 OpenStax::RescueFrom.configure do |config|
-  config.raise_exceptions = false          # Rails users may wish to use Rails.application.config.consider_all_requests_local to decide this
-  config.logger = Rails.logger             # Any logger that takes a string in an #error method will work
-  config.notifier = ExceptionNotifier      # Any notifier that takes an exception in a #notify_exception method will work
-  config.html_template_path = 'errors/any' # The template path for the HTML response
-  config.layout_name = 'application'       # The layout name for the HTML response
+  config.raise_exceptions = Rails.application.config.consider_all_requests_local
+    # Don't render the friendly template for local development
+  config.logger = Rails.logger
+    # Any logger that takes a string in an #error method will work
+  config.notifier = ExceptionNotifier
+    # Any notifier that takes an exception in a #notify_exception method will work
+  config.html_template_path = 'errors/any'
+    # The template path for the HTML response
+  config.layout_name = 'application'
+    # The layout name for the HTML response
+  config.email_prefix = "[#{application_name}] (#{Server.nickname}) "
+    # Email subject line for the notifier
+  config.sender_address = %{"OpenStax Tutor" <noreply@openstax.org>}
+    # Email sender for the notifier
+  config.exception_recipients = %w{tutor-notifications@openstax.org}
+    # Email recipients for the notifier
 
   # Of course, you can append to the following lists and maps:
 
