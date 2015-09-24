@@ -40,7 +40,7 @@ module OpenStax
       end
 
       def backtrace
-        @backtrace ||= cause.blank? ? all_backtrace_lines : first_backtrace_line
+        @backtrace ||= cause.blank? ? first_backtrace_line : all_backtrace_lines
       end
 
       def all_backtrace_lines
