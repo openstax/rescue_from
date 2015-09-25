@@ -1,3 +1,5 @@
+require 'openstax/rescue_from/controller'
+require 'openstax/rescue_from/view_helpers'
 require 'openstax/rescue_from/configuration'
 
 module OpenStax

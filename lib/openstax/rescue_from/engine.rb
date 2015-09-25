@@ -8,7 +8,11 @@ module OpenStax
       end
 
       initializer "openstax.rescue_from.action_controller" do
-        ActionController::Base.send :include, RescueFrom::Controller
+        ActionController::Base.send :include, Controller
+      end
+
+      initializer "openstax.rescue_from.view_helpers" do
+        ActionView::Base.send :include, ViewHelpers
       end
 
       initializer "openstax.rescue_from.use_exception_notification_middleware" do
