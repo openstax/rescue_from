@@ -107,14 +107,15 @@ OpenStax::RescueFrom.register_exception(OAuth2::Error,
                                           { headers: exception.response.headers,
                                             status: exception.response.status,
                                             body: exception.response.body }
+                                        })
 
 OpenStax::RescueFrom.translate_status_codes({
-  forbidden: "You are not allowed to access this.",
-  :not_found => "We couldn't find what you asked for.",
+  forbidden: 'You are not allowed to access this.',
+  not_found: 'We couldn't find what you asked for.',
 })
 #
 # Default:
-#   - internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
+#   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
 ```
 
 ## Override the views
