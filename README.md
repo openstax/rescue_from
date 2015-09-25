@@ -122,23 +122,6 @@ OpenStax::RescueFrom.translate_status_codes({
 #   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
 ```
 
-## Override the views
-
-You can either declare your own template path variables:
-
-```ruby
-OpenStax::RescueFrom.configure do |config|
-  config.html_error_template_path = 'my/path'
-  config.html_error_template_layout_name = 'my_layout'
-end
-```
-
-or, you can generate the views into the default path:
-
-```
-$ rails g open_stax:rescue_from:views
-```
-
 ## Controller before/after hooks
 ```ruby
 #
@@ -160,6 +143,25 @@ def after_openstax_exception_rescue(exception_proxy)
 end
 
 # Just override these methods in your own controller if you wish
+```
+
+You will readily note that for HTML response, there is an error template rendered from within the gem. See below for overriding these default views.
+
+## Override the views
+
+You can either declare your own template path variables:
+
+```ruby
+OpenStax::RescueFrom.configure do |config|
+  config.html_error_template_path = 'my/path'
+  config.html_error_template_layout_name = 'my_layout'
+end
+```
+
+or, you can generate the views into the default path:
+
+```
+$ rails g open_stax:rescue_from:views
 ```
 
 ## Development
