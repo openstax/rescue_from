@@ -60,10 +60,13 @@ This configuration, which is placed in `./config/initializers/rescue_from.rb` by
 
 ```ruby
 OpenStax::RescueFrom.configure do |config|
-  config.raise_exceptions = ENV['RAISE_EXCEPTIONS'] || Rails.application.config.consider_all_requests_local
+  config.raise_exceptions = ![false, 'false'].include?(ENV['RAISE_EXCEPTIONS'] ||
+                              Rails.application.config.consider_all_requests_local
 
-  config.app_name = ENV['APP_NAME'] || 'Tutor'
-  config.app_env = ENV['APP_ENV'] || 'DEV'
+  config.app_name = ENV['APP_NAME']
+  config.app_env = ENV['APP_ENV']
+  config.contact_name = ENV['EXCEPTION_CONTACT_NAME']
+    # can be a name, or a web/email address. See 'View helper' below
 
   config.notifier = ExceptionNotifier
 
@@ -71,8 +74,8 @@ OpenStax::RescueFrom.configure do |config|
   config.html_error_template_layout_name = 'application'
 
   config.email_prefix = "[#{app_name}] (#{app_env}) "
-  config.sender_address = ENV['EXCEPTION_SENDER'] || %{"OpenStax Tutor" <noreply@openstax.org>}
-  config.exception_recipients = ENV['EXCEPTION_RECIPIENTS'] || %w{tutor-notifications@openstax.org}
+  config.sender_address = ENV['EXCEPTION_SENDER']
+  config.exception_recipients = ENV['EXCEPTION_RECIPIENTS']
 end
 ```
 
@@ -163,6 +166,10 @@ or, you can generate the views into the default path:
 ```
 $ rails g open_stax:rescue_from:views
 ```
+
+## View helper
+
+The gem provides an `openstax_rescue_from_contact_info` view helper that uses `OpenStax::RescueFrom.configuration.contact_name` to provide either just the name, or to link web and email addresses automatically for you.
 
 ## Development
 

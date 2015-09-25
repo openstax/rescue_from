@@ -1,7 +1,7 @@
 require 'openstax_rescue_from'
 
 OpenStax::RescueFrom.configure do |config|
-  config.raise_exceptions = ENV['RAISE_EXCEPTIONS'] ||
+  config.raise_exceptions = ![false, 'false'].include?(ENV['RAISE_EXCEPTIONS']) ||
                               Rails.application.config.consider_all_requests_local
 
   # config.app_name = 'Tutor'
