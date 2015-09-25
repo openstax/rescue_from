@@ -3,12 +3,6 @@ require 'openstax/rescue_from/configuration'
 module OpenStax
   module RescueFrom
     class << self
-      @@registered_exceptions = []
-      @@non_notifying_exceptions = []
-      @@friendly_status_messages = {}
-      @@exception_status_codes = {}
-      @@exception_extras = {}
-
       def perform_rescue(exception:, listener: MuteListener.new)
         proxy = ExceptionProxy.new(exception)
 
@@ -18,24 +12,46 @@ module OpenStax
         finish_exception_rescue(proxy, listener)
       end
 
+      def notifies_exception?(exception_name)
+        notifying_exceptions.include?(exception_name)
+      end
+
       def registered_exceptions
-        @@registered_exceptions
+        @@registered_exceptions ||= []
+      end
+
+      def notifying_exceptions
+        registered_exceptions - non_notifying_exceptions
       end
 
       def non_notifying_exceptions
-        @@non_notifying_exceptions
+        @@non_notifying_exceptions ||= []
       end
 
       def friendly_status_messages
-        @@friendly_status_messages
+        @@friendly_status_messages ||= {
+          internal_server_error: "Sorry, #{configuration.app_name} had some unexpected trouble with your request."
+        }
       end
 
       def exception_status_codes
-        @@exception_status_codes
+        @@exception_status_codes ||= {}
+      end
+
+      def exception_status_code(exception_name)
+        exception_status_codes[exception_name] || :internal_server_error
+      end
+
+      def status_code(status)
+        Rack::Utils.status_code(status)
       end
 
       def exception_extras
-        @@exception_extras
+        @@exception_extras ||= {}
+      end
+
+      def exception_extra(exception_name)
+        exception_extras[exception_name] || ->(exception) { {} }
       end
 
       def register_exception(exception, options = {})
@@ -44,16 +60,24 @@ module OpenStax
                     'status' => :internal_server_error,
                     'extras' => ->(exception) { {} } }.merge(options)
 
-        @@registered_exceptions << exception.name
-        @@non_notifying_exceptions << exception.name unless options['notify']
-        @@exception_status_codes[exception.name] = options['status']
-        @@exception_extras[exception.name] = options['extras']
+        registered_exceptions << exception.name
+        non_notifying_exceptions << exception.name unless options['notify']
+        exception_status_codes[exception.name] = options['status']
+        exception_extras[exception.name] = options['extras']
       end
 
       def translate_status_codes(map = {})
         map.each do |k, v|
-          @@friendly_status_messages[k] = v
+          friendly_status_messages[k] = v
         end
+      end
+
+      def resolve_ip(ip)
+        Resolv.getname(ip) rescue 'unknown'
+      end
+
+      def generate_id
+        "%06d#{SecureRandom.random_number(10**6)}"
       end
 
       def configure
@@ -81,7 +105,7 @@ module OpenStax
               message: proxy.message,
               first_line_of_backtrace: proxy.first_backtrace_line,
               cause: proxy.cause,
-              dns_name: proxy.dns_name,
+              dns_name: resolve_ip(listener.request.remote_ip),
               extras: proxy.extras
             },
             sections: %w(data request session environment backtrace)

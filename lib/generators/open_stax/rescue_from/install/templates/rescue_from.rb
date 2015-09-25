@@ -43,5 +43,7 @@ end
 # OpenStax::RescueFrom.translate_status_codes({
 #   forbidden: "You are not allowed to access this.",
 #   :not_found => "We couldn't find what you asked for.",
-#   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
 # })
+#
+# Default:
+#   - internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."

@@ -12,7 +12,7 @@ module OpenStax
       end
 
       def error_id
-        @error_id ||= Error.id
+        @error_id ||= RescueFrom.generate_id
       end
 
       def message
@@ -20,20 +20,11 @@ module OpenStax
       end
 
       def friendly_message
-        RescueFrom.friendly_status_messages[status] ||
-          'There was an unspecified problem. Sorry.'
-      end
-
-      def dns_name
-        @dns_name ||= Resolv.getname(listener.request.remote_ip) rescue 'unknown'
+        RescueFrom.friendly_status_messages[status]
       end
 
       def extras
-        @extras ||= if extras_proc = RescueFrom.exception_extras[exception.class.name]
-                      extras_proc.call(exception)
-                    else
-                      {}
-                    end
+        @extras ||= RescueFrom.exception_extra(exception.class.name).call(exception)
       end
 
       def cause
@@ -53,16 +44,15 @@ module OpenStax
       end
 
       def status
-        @status ||= RescueFrom.exception_status_codes[exception.class.name] ||
-                      :internal_server_error
+        @status ||= RescueFrom.exception_status_code(exception.class.name)
       end
 
       def status_code
-        @status_code ||= Rack::Utils.status_code(status)
+        @status_code ||= RescueFrom.status_code(status)
       end
 
       def notify?
-        not RescueFrom.non_notifying_exceptions.include?(name)
+        RescueFrom.notifies_exception?(name)
       end
     end
   end
