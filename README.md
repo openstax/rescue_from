@@ -40,7 +40,6 @@ class ApplicationController < ActionController::Base
   # Override the rescued hook which is called when configuration.raise_exceptions is false
   # (See 'Controller hook')
   #
-  # private
   # def openstax_exception_rescued(exception_proxy)
   #   app_name = openstax_rescue_config.app_name
   #     # RescueFrom.configuration private method available to you
