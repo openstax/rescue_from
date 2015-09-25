@@ -23,10 +23,6 @@ module OpenStax
           record_system_error!("Exception cause")
         end
       end
-
-      def config
-        RescueFrom.configuration
-      end
     end
   end
 end
