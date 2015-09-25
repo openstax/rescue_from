@@ -13,13 +13,11 @@ module OpenStax
         end
       end
 
-      def before_openstax_exception_rescue(proxy)
+      def openstax_exception_rescued(proxy)
         @message = proxy.friendly_message
         @code = proxy.status_code
         @error_id = proxy.error_id
-      end
 
-      def after_openstax_exception_rescue(proxy)
         respond_to do |f|
           f.html { render template: openstax_rescue_config.html_error_template_path,
                           layout: openstax_rescue_config.html_error_template_layout_name,

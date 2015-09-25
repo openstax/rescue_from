@@ -9,7 +9,6 @@ module OpenStax
         proxy = ExceptionProxy.new(exception)
 
         register_exception(exception.class)
-        listener.before_openstax_exception_rescue(proxy)
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
@@ -130,7 +129,7 @@ module OpenStax
         if configuration.raise_exceptions
           raise proxy.exception
         else
-          listener.after_openstax_exception_rescue(proxy)
+          listener.openstax_exception_rescued(proxy)
         end
       end
     end
