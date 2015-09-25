@@ -26,9 +26,9 @@ module OpenStax
       end
 
       def construct_email_prefix
-        name = app_name.blank? ? "" : "[#{app_name}]"
-        env = app_env.blank? ? "" : "(#{app_env}) "
-        [name, env].join(' ')
+        name = app_name.blank? ? nil : "[#{app_name}]"
+        env = app_env.blank? ? nil : "(#{app_env}) "
+        [name, env].compact.join(' ')
       end
     end
   end
