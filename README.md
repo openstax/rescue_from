@@ -80,6 +80,8 @@ end
 
 In `./config/initializers/rescue_from.rb` it is recommended you register your exceptions
 
+Note that any unregistered exceptions rescued during run-time will be registered with the default options. See below.
+
 ```ruby
 require 'openstax_rescue_from'
 
@@ -89,9 +91,12 @@ end
 
 # OpenStax::RescueFrom#register_exception default options:
 #
-# { notify: false,
+# { notify: true,
 #   status: :internal_server_error,
 #   extras: ->(exception) { {} } }
+#
+# Any unregistered exceptions rescued during run-time
+# will be registered during rescue with the options above
 
 OpenStax::RescueFrom.register_exception(SecurityTransgression,
                                         notify: false,
@@ -102,7 +107,6 @@ OpenStax::RescueFrom.register_exception(ActiveRecord::NotFound,
                                         status: :not_found)
 
 OpenStax::RescueFrom.register_exception(OAuth2::Error,
-                                        notify: true,
                                         extras: ->(exception) {
                                           { headers: exception.response.headers,
                                             status: exception.response.status,

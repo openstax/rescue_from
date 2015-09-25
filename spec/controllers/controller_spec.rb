@@ -65,7 +65,7 @@ module Test
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex
 
-        expected_status = OpenStax::RescueFrom.exception_status_codes[ex]
+        expected_status = OpenStax::RescueFrom.status(ex)
 
         expect(response).to render_template('errors/any')
         expect(response).to have_http_status(expected_status),
@@ -77,7 +77,7 @@ module Test
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex, format: :json
 
-        expected_status = OpenStax::RescueFrom.exception_status_codes[ex]
+        expected_status = OpenStax::RescueFrom.status(ex)
 
         expect(JSON.parse(response.body)).to eq({ 'error_id' => '%06d123' })
         expect(response).to have_http_status(expected_status),
@@ -91,7 +91,7 @@ module Test
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
         get :bad_action, exception: ex, format: formats.sample
 
-        expected_status = OpenStax::RescueFrom.exception_status_codes[ex]
+        expected_status = OpenStax::RescueFrom.status(ex)
 
         expect(response.body).to be_blank
         expect(response).to have_http_status(expected_status),

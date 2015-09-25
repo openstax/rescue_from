@@ -7,63 +7,24 @@ module OpenStax
         proxy = ExceptionProxy.new(exception)
 
         listener.before_openstax_exception_rescue(proxy)
+        register_exception(exception.class)
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
       end
 
-      def notifies_exception?(exception_name)
-        notifying_exceptions.include?(exception_name)
-      end
-
-      def registered_exceptions
-        @@registered_exceptions ||= []
-      end
-
-      def notifying_exceptions
-        registered_exceptions - non_notifying_exceptions
-      end
-
-      def non_notifying_exceptions
-        @@non_notifying_exceptions ||= []
-      end
-
-      def friendly_status_messages
-        @@friendly_status_messages ||= {
-          internal_server_error: "Sorry, #{configuration.app_name} had some unexpected trouble with your request."
-        }
-      end
-
-      def exception_status_codes
-        @@exception_status_codes ||= {}
-      end
-
-      def exception_status_code(exception_name)
-        exception_status_codes[exception_name] || :internal_server_error
-      end
-
-      def status_code(status)
-        Rack::Utils.status_code(status)
-      end
-
-      def exception_extras
-        @@exception_extras ||= {}
-      end
-
-      def exception_extra(exception_name)
-        exception_extras[exception_name] || ->(exception) { {} }
-      end
-
       def register_exception(exception, options = {})
-        options.stringify_keys!
-        options = { 'notify' => false,
-                    'status' => :internal_server_error,
-                    'extras' => ->(exception) { {} } }.merge(options)
+        unless registered_exceptions.include?(exception.name)
+          options.stringify_keys!
+          options = { 'notify' => true,
+                      'status' => :internal_server_error,
+                      'extras' => ->(exception) { {} } }.merge(options)
 
-        registered_exceptions << exception.name
-        non_notifying_exceptions << exception.name unless options['notify']
-        exception_status_codes[exception.name] = options['status']
-        exception_extras[exception.name] = options['extras']
+          registered_exceptions << exception.name
+          non_notifying_exceptions << exception.name unless options['notify']
+          exception_status_codes[exception.name] = options['status']
+          exception_extras[exception.name] = options['extras']
+        end
       end
 
       def translate_status_codes(map = {})
@@ -72,8 +33,36 @@ module OpenStax
         end
       end
 
-      def resolve_ip(ip)
-        Resolv.getname(ip) rescue 'unknown'
+      def registered_exceptions
+        @@registered_exceptions ||= []
+      end
+
+      def non_notifying_exceptions
+        @@non_notifying_exceptions ||= []
+      end
+
+      def notifying_exceptions
+        registered_exceptions - non_notifying_exceptions
+      end
+
+      def friendly_message(status)
+        friendly_status_messages[status] || default_friendly_message
+      end
+
+      def notifies_for?(exception_name)
+        notifying_exceptions.include?(exception_name)
+      end
+
+      def status(exception_name)
+        exception_status_codes[exception_name] || :internal_server_error
+      end
+
+      def http_code(status)
+        Rack::Utils.status_code(status)
+      end
+
+      def extras_proc(exception_name)
+        exception_extras[exception_name] || ->(exception) { {} }
       end
 
       def generate_id
@@ -89,13 +78,35 @@ module OpenStax
       end
 
       private
+      def friendly_status_messages
+        @@friendly_status_messages ||= {
+          internal_server_error: default_friendly_message
+        }
+      end
+
+      def exception_status_codes
+        @@exception_status_codes ||= {}
+      end
+
+      def exception_extras
+        @@exception_extras ||= {}
+      end
+
+      def default_friendly_message
+        "Sorry, #{configuration.app_name} had some unexpected trouble with your request."
+      end
+
+      def resolve_ip(ip)
+        Resolv.getname(ip) rescue 'unknown'
+      end
+
       def log_system_error(proxy)
         logger = Logger.new(proxy)
         logger.record_system_error!
       end
 
       def send_notifying_exceptions(proxy, listener)
-        if proxy.notify?
+        if notifies_for?(proxy.name)
           configuration.notifier.notify_exception(
             proxy.exception,
             env: listener.request.env,

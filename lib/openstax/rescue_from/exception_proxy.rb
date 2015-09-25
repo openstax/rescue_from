@@ -20,11 +20,11 @@ module OpenStax
       end
 
       def friendly_message
-        RescueFrom.friendly_status_messages[status]
+        RescueFrom.friendly_message(status)
       end
 
       def extras
-        @extras ||= RescueFrom.exception_extra(exception.class.name).call(exception)
+        @extras ||= RescueFrom.extras_proc(name).call(exception)
       end
 
       def cause
@@ -44,15 +44,11 @@ module OpenStax
       end
 
       def status
-        @status ||= RescueFrom.exception_status_code(exception.class.name)
+        @status ||= RescueFrom.status(name)
       end
 
       def status_code
-        @status_code ||= RescueFrom.status_code(status)
-      end
-
-      def notify?
-        RescueFrom.notifies_exception?(name)
+        @status_code ||= RescueFrom.http_code(status)
       end
     end
   end

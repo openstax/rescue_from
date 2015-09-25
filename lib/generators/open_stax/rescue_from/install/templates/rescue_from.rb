@@ -21,9 +21,12 @@ end
 
 # OpenStax::RescueFrom#register_exception default options:
 #
-# { notify: false,
+# { notify: true,
 #   status: :internal_server_error,
 #   extras: ->(exception) { {} } }
+#
+# NOTE: Any unregistered exceptions rescued during run-time
+# will be registered with RescueFrom with the above options
 
 # OpenStax::RescueFrom.register_exception(SecurityTransgression,
 #                                         notify: false,
