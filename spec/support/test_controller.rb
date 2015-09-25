@@ -3,15 +3,7 @@ module Test
     use_openstax_exception_rescue
 
     def bad_action
-      exception = params[:exception].constantize
-      raise case params[:exception]
-            when 'ActionController::RoutingError'
-              exception.new('routing error')
-            when 'ActionView::MissingTemplate'
-              exception.new(['some/path', 'other/path'], 'some/path', [], nil, '')
-            else
-              exception.new
-            end
+      raise params[:exception].constantize
     end
   end
 

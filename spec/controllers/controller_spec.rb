@@ -1,42 +1,18 @@
 require 'rails_helper'
-require './spec/support/exceptions_list'
 require './spec/support/test_controller'
+
+#
+# /!\ SEE [./spec/dummy/config/initializers/rescue_from.rb] FOR TESTED DETAILS /!\
+#
 
 module Test
   RSpec.describe TestController do
     before do
       allow(SecureRandom).to receive(:random_number) { 123 }
-
-      OpenStax::RescueFrom.configure do |c|
-        c.raise_exceptions = false
-        c.app_name = 'Test app name'
-      end
-
-      OpenStax::RescueFrom.register_exception(SecurityTransgression,
-                                              notify: false,
-                                              status: :forbidden)
-
-      OpenStax::RescueFrom.register_exception(ActiveRecord::RecordNotFound,
-                                              notify: false,
-                                              status: :not_found)
-
-      OpenStax::RescueFrom.register_exception(OAuth2::Error,
-                                              notify: true,
-                                              extras: ->(exception) { 'found extras' })
-
-      OpenStax::RescueFrom.translate_status_codes({
-        forbidden: "You are not allowed to access this.",
-        :not_found => "We couldn't find what you asked for.",
-        internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
-      })
     end
 
     context 'configured to raise exceptions' do
-      before do
-        OpenStax::RescueFrom.configure do |c|
-          c.raise_exceptions = true
-        end
-      end
+      before { OpenStax::RescueFrom.configure { |c| c.raise_exceptions = true } }
 
       it 'raises the exceptions' do
         OpenStax::RescueFrom.registered_exceptions.each do |ex|
@@ -53,11 +29,14 @@ module Test
 
         allow_any_instance_of(ex.constantize).to receive(:message) { 'ex msg' }
         allow_any_instance_of(ex.constantize).to receive(:backtrace) { ['backtrace ln'] }
+        allow_any_instance_of(OpenStax::RescueFrom::ExceptionProxy).to receive(:extras) {
+          {}
+        }
 
         get :bad_action, exception: ex
 
         expect(Rails.logger).to have_received(:error).with(
-          "An exception occurred: #{ex} [%06d123] <ex msg> found extras\n\nbacktrace ln"
+          "An exception occurred: #{ex} [%06d123] <ex msg> {}\n\nbacktrace ln"
         )
       end
     end
@@ -117,8 +96,16 @@ module Test
 
     it 'emails for other exceptions' do
       ActionMailer::Base.deliveries.clear
+
       get :bad_action, exception: 'ArgumentError'
+
       expect(ActionMailer::Base.deliveries).not_to be_empty
+
+      mail = ActionMailer::Base.deliveries.first
+
+      expect(mail.from).to eq(['donotreply@dummyapp.com'])
+      expect(mail.to).to eq(['notify@dummyapp.com'])
+      expect(mail.subject).to eq('[RescueFrom Dummy App] (DUM) # (ArgumentError) "ArgumentError"')
     end
 
     it 'sets message and code instance variables for html response' do
@@ -127,7 +114,7 @@ module Test
       expect(assigns[:code]).to eq(500)
       expect(assigns[:error_id]).to eq("%06d123")
       expect(assigns[:message]).to eq(
-        "Sorry, Test app name had some unexpected trouble with your request."
+        "Sorry, RescueFrom Dummy App had some unexpected trouble with your request."
       )
     end
   end
