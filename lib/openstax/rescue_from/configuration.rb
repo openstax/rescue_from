@@ -20,9 +20,15 @@ module OpenStax
         @html_error_template_path = 'errors/any'
         @html_error_template_layout_name = 'application'
 
-        @email_prefix = "[#{app_name}] (#{app_env}) "
+        @email_prefix = construct_email_prefix
         @sender_address = ENV['EXCEPTION_SENDER']
         @exception_recipients = ENV['EXCEPTION_RECIPIENTS']
+      end
+
+      def construct_email_prefix
+        name = app_name.blank? ? "" : "[#{app_name}]"
+        env = app_env.blank? ? "" : "(#{app_env}) "
+        [name, env].join(' ')
       end
     end
   end

@@ -8,7 +8,8 @@ module Test
       allow(SecureRandom).to receive(:random_number) { 123 }
 
       OpenStax::RescueFrom.configure do |c|
-        c.raise_exceptions = false # default
+        c.raise_exceptions = false
+        c.app_name = 'Test app name'
       end
 
       OpenStax::RescueFrom.register_exception(SecurityTransgression,
@@ -126,8 +127,8 @@ module Test
       expect(assigns[:code]).to eq(500)
       expect(assigns[:error_id]).to eq("%06d123")
       expect(assigns[:message]).to eq(
-        "Sorry, Tutor had some unexpected trouble with your request."
-      ) # 'Tutor' is configurable!
+        "Sorry, Test app name had some unexpected trouble with your request."
+      )
     end
   end
 end

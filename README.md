@@ -37,15 +37,14 @@ class ApplicationController < ActionController::Base
 
   # ...
 
-  # Override the before and after hooks if you want to
-  # (See 'Controller before/after hooks')
+  # Override the rescued hook which is called when configuration.raise_exceptions is false
+  # (See 'Controller hook')
   #
   # private
-  # def before_openstax_exception_rescue(exception_proxy)
-  #   # noop
-  # end
+  # def openstax_exception_rescued(exception_proxy)
+  #   app_name = openstax_rescue_config.app_name
+  #     # RescueFrom.configuration private method available to you
   #
-  # def after_openstax_exception_rescue(exception_proxy)
   #   respond_to do |f|
   #     f.xml { render text: "I respond strangely to the XML format!",
   #                    status: exception_proxy.status }
@@ -125,27 +124,32 @@ OpenStax::RescueFrom.translate_status_codes({
 #   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
 ```
 
-## Controller before/after hooks
+## Controller hook
 ```ruby
 #
-# Mixed in Controller module instance methods
+#             -- Mixed in Controller module instance method --
+#
+#       -- this method is ONLY called when Exceptions are not raised --
+#
+# -- check your OpenStax::RescueFrom.configuration.raise_exceptions setting --
 #
 
-def before_openstax_exception_rescue(exception_proxy)
+def openstax_exception_rescued(exception_proxy)
   @message = exception_proxy.friendly_message
   @status = exception_proxy.status
   @error_id = exception_proxy.error_id
-end
 
-def after_openstax_exception_rescue(exception_proxy)
   respond_to do |f|
-    f.html { render template: config.html_error_template_path, layout: config.html_error_template_layout_name, status: exception_proxy.status }
-    f.json { render json: { error_id: exception_proxy.error_id }, status: exception_proxy.status }
+    f.html { render template: openstax_rescue_config.html_error_template_path,
+                    layout: openstax_rescue_config.html_error_template_layout_name,
+                    status: exception_proxy.status }
+    f.json { render json: { error_id: exception_proxy.error_id }
+                    status: exception_proxy.status }
     f.all { render nothing: true, status: exception_proxy.status }
   end
 end
 
-# Just override these methods in your own controller if you wish
+# Just override this method in your own controller if you wish
 ```
 
 You will readily note that for HTML response, there is an error template rendered from within the gem. See below for overriding these default views.

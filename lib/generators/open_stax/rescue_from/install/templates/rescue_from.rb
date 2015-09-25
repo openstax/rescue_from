@@ -4,8 +4,9 @@ OpenStax::RescueFrom.configure do |config|
   config.raise_exceptions = ![false, 'false'].include?(ENV['RAISE_EXCEPTIONS']) ||
                               Rails.application.config.consider_all_requests_local
 
-  # config.app_name = 'Tutor'
-  # config.app_env = ENV['APP_ENV'] || 'DEV'
+  # config.app_name = ENV['APP_NAME']
+  # config.app_env = ENV['APP_ENV']
+  # config.contact_name = ENV['EXCEPTION_CONTACT_NAME']
 
   # config.notifier = ExceptionNotifier
 
@@ -13,10 +14,8 @@ OpenStax::RescueFrom.configure do |config|
   # config.html_error_template_layout_name = 'application'
 
   # config.email_prefix = "[#{app_name}] (#{app_env}) "
-  # config.sender_address = ENV['EXCEPTION_SENDER'] ||
-  #                           %{"OpenStax Tutor" <noreply@openstax.org>}
-  # config.exception_recipients = ENV['EXCEPTION_RECIPIENTS'] ||
-  #                                 %w{tutor-notifications@openstax.org}
+  # config.sender_address = ENV['EXCEPTION_SENDER']
+  # config.exception_recipients = ENV['EXCEPTION_RECIPIENTS']
 end
 
 # OpenStax::RescueFrom#register_exception default options:
