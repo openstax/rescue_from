@@ -6,19 +6,34 @@ require 'openstax/rescue_from/logger'
 module OpenStax
   module RescueFrom
     RSpec.describe Logger do
+      before do
+        OpenStax::RescueFrom.configure do |c|
+          c.raise_exceptions = false
+        end
+      end
+
       it 'recursively logs exceptions with causes' do
-        cause = double(:caused, cause: nil).as_null_object
-        exception = double(:exception, cause: cause).as_null_object
+        logger = nil
 
-        proxy = ExceptionProxy.new(exception)
-        logger = described_class.new(proxy)
+        begin
+          raise ArgumentError
+        rescue => cause
+          begin
+            raise StandardError
+          rescue => e
+            logger = described_class.new(ExceptionProxy.new(e))
 
-        allow(logger).to receive(:record_system_error!).and_call_original
+            allow(described_class).to receive(:new) { logger }
+            allow(logger).to receive(:record_system_error!).and_call_original
 
-        logger.record_system_error!
+            RescueFrom.perform_rescue(exception: e)
 
-        expect(logger).to have_received(:record_system_error!).with(no_args).once
-        expect(logger).to have_received(:record_system_error!).with("Exception cause").once
+            expect(logger).to have_received(:record_system_error!)
+                              .with(no_args).once
+            expect(logger).to have_received(:record_system_error!)
+                              .with("Exception cause").once
+          end
+        end
       end
     end
   end

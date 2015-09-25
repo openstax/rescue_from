@@ -18,6 +18,7 @@ module OpenStax
       private
       def record_system_error_recursively!
         if proxy.cause
+          RescueFrom.register_exception(proxy.cause.class)
           @proxy = ExceptionProxy.new(proxy.cause)
           record_system_error!("Exception cause")
         end

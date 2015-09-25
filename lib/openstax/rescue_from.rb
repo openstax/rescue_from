@@ -6,8 +6,8 @@ module OpenStax
       def perform_rescue(exception:, listener: MuteListener.new)
         proxy = ExceptionProxy.new(exception)
 
-        listener.before_openstax_exception_rescue(proxy)
         register_exception(exception.class)
+        listener.before_openstax_exception_rescue(proxy)
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
@@ -54,7 +54,7 @@ module OpenStax
       end
 
       def status(exception_name)
-        exception_status_codes[exception_name] || :internal_server_error
+        exception_status_codes[exception_name]
       end
 
       def http_code(status)
@@ -62,7 +62,7 @@ module OpenStax
       end
 
       def extras_proc(exception_name)
-        exception_extras[exception_name] || ->(exception) { {} }
+        exception_extras[exception_name]
       end
 
       def generate_id
