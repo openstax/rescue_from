@@ -1,3 +1,4 @@
+require 'openstax/rescue_from/exception_options'
 require 'openstax/rescue_from/controller'
 require 'openstax/rescue_from/view_helpers'
 require 'openstax/rescue_from/configuration'
@@ -15,17 +16,8 @@ module OpenStax
       end
 
       def register_exception(exception, options = {})
-        unless registered_exceptions.include?(exception.name)
-          options.stringify_keys!
-          options = { 'notify' => true,
-                      'status' => :internal_server_error,
-                      'extras' => ->(exception) { {} } }.merge(options)
-
-          registered_exceptions << exception.name
-          non_notifying_exceptions << exception.name unless options['notify']
-          exception_status_codes[exception.name] = options['status']
-          exception_extras[exception.name] = options['extras']
-        end
+        @@registered_exceptions ||= {}
+        @@registered_exceptions[exception.name] = ExceptionOptions.new(options)
       end
 
       def translate_status_codes(map = {})
@@ -35,15 +27,15 @@ module OpenStax
       end
 
       def registered_exceptions
-        @@registered_exceptions ||= []
+        @@registered_exceptions.keys
       end
 
       def non_notifying_exceptions
-        @@non_notifying_exceptions ||= []
+        @@registered_exceptions.reject { |_, v| v.notify? }.keys
       end
 
       def notifying_exceptions
-        registered_exceptions - non_notifying_exceptions
+        @@registered_exceptions.select { |_, v| v.notify? }.keys
       end
 
       def friendly_message(status)
@@ -55,7 +47,7 @@ module OpenStax
       end
 
       def status(exception_name)
-        exception_status_codes[exception_name]
+        @@registered_exceptions[exception_name].status_code
       end
 
       def http_code(status)
@@ -63,7 +55,7 @@ module OpenStax
       end
 
       def extras_proc(exception_name)
-        exception_extras[exception_name]
+        @@registered_exceptions[exception_name].extras
       end
 
       def generate_id
@@ -83,14 +75,6 @@ module OpenStax
         @@friendly_status_messages ||= {
           internal_server_error: default_friendly_message
         }
-      end
-
-      def exception_status_codes
-        @@exception_status_codes ||= {}
-      end
-
-      def exception_extras
-        @@exception_extras ||= {}
       end
 
       def default_friendly_message
