@@ -22,10 +22,6 @@ OpenStax::RescueFrom.register_exception(SecurityTransgression,
                                         notify: false,
                                         status: :forbidden)
 
-OpenStax::RescueFrom.register_exception(ActiveRecord::RecordNotFound,
-                                        notify: false,
-                                        status: :not_found)
-
 OpenStax::RescueFrom.register_exception(OAuth2::Error,
                                         notify: true,
                                         extras: ->(exception) { 'found extras' })

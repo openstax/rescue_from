@@ -1,3 +1,5 @@
+require 'openstax/rescue_from/default_exceptions'
+
 module OpenStax
   module RescueFrom
     class Engine < ::Rails::Engine
@@ -21,6 +23,10 @@ module OpenStax
           sender_address: RescueFrom.configuration.sender_address,
           exception_recipients: RescueFrom.configuration.exception_recipients
         }
+      end
+
+      initializer "openstax.rescue_from.pre_register_exceptions" do
+        OpenStax::RescueFrom::DefaultExceptions.pre_register!
       end
     end
   end

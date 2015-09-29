@@ -27,7 +27,7 @@ module OpenStax
       end
 
       def registered_exceptions
-        @@registered_exceptions.keys
+        @@registered_exceptions.dup
       end
 
       def non_notifying_exceptions
