@@ -6,8 +6,8 @@ require 'openstax/rescue_from/version'
 Gem::Specification.new do |spec|
   spec.name          = "openstax_rescue_from"
   spec.version       = OpenStax::RescueFrom::VERSION
-  spec.authors       = ["JP Slavinsky"]
-  spec.email         = ["jps@kindlinglabs.com"]
+  spec.authors       = ["JP Slavinsky", "Joe Sak"]
+  spec.email         = ["jps@kindlinglabs.com", "joe@avant-gardelabs.com"]
 
   spec.summary       = %q{Common exception `rescue_from` handling for OpenStax sites.}
   spec.homepage      = "https://github.com/openstax/rescue_from"
@@ -18,7 +18,14 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "rails", '>= 3.1', '< 5.0'
+  spec.add_dependency "exception_notification", '>= 4.1', '< 5.0'
+
+  spec.add_development_dependency "pg", '~> 0.18.3'
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rspec-rails", '~> 3.3.3'
+  spec.add_development_dependency "pry-nav", '~> 0.2.4'
+  spec.add_development_dependency "pry-rails", '~> 0.3.4'
+  spec.add_development_dependency "database_cleaner", '~> 1.5.0'
 end
