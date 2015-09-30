@@ -6,7 +6,7 @@ require 'openstax/rescue_from/configuration'
 module OpenStax
   module RescueFrom
     class << self
-      def perform_rescue(exception:, listener: MuteListener.new)
+      def perform_rescue(exception, listener = MuteListener.new)
         unless registered_exceptions.keys.include?(exception.class.name)
           register_exception(exception.class)
         end
