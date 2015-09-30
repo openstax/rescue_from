@@ -1,12 +1,12 @@
 require 'rails_helper'
 require './spec/support/test_controller'
 
-#
-# /!\ SEE [./spec/dummy/config/initializers/rescue_from.rb] FOR TESTED DETAILS /!\
-#
-
 module Test
   RSpec.describe TestController do
+    let(:examples) { ['SecurityTransgression',
+                      'OAuth2::Error',
+                      'ActiveRecord::RecordNotFound'] }
+
     before do
       allow(SecureRandom).to receive(:random_number) { 123 }
     end
@@ -15,7 +15,7 @@ module Test
       before { OpenStax::RescueFrom.configure { |c| c.raise_exceptions = true } }
 
       it 'raises the exceptions' do
-        OpenStax::RescueFrom.registered_exceptions.each do |ex|
+        examples.each do |ex|
           expect {
             get :bad_action, exception: ex
           }.to raise_error(ex.constantize)
@@ -23,7 +23,7 @@ module Test
       end
     end
 
-    OpenStax::RescueFrom.registered_exceptions.each do |ex|
+    examples.each do |ex|
       it "logs the #{ex} exception" do
         allow(Rails.logger).to receive(:error)
 

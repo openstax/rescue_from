@@ -7,17 +7,20 @@ module OpenStax
   module RescueFrom
     class << self
       def perform_rescue(exception:, listener: MuteListener.new)
-        proxy = ExceptionProxy.new(exception)
+        unless registered_exceptions.keys.include?(exception.class.name)
+          register_exception(exception.class)
+        end
 
-        register_exception(exception.class)
+        proxy = ExceptionProxy.new(exception)
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
       end
 
       def register_exception(exception, options = {})
+        name = exception.is_a?(String) ? exception : exception.name
         @@registered_exceptions ||= {}
-        @@registered_exceptions[exception.name] = ExceptionOptions.new(options)
+        @@registered_exceptions[name] = ExceptionOptions.new(options)
       end
 
       def translate_status_codes(map = {})
@@ -27,7 +30,7 @@ module OpenStax
       end
 
       def registered_exceptions
-        @@registered_exceptions.keys
+        @@registered_exceptions.dup
       end
 
       def non_notifying_exceptions

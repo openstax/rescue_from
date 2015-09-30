@@ -99,7 +99,7 @@ end
 # Any unregistered exceptions rescued during run-time
 # will be registered during rescue with the options above
 
-OpenStax::RescueFrom.register_exception(SecurityTransgression,
+OpenStax::RescueFrom.register_exception('SecurityTransgression',
                                         notify: false,
                                         status: :forbidden)
 
@@ -107,7 +107,7 @@ OpenStax::RescueFrom.register_exception(ActiveRecord::NotFound,
                                         notify: false,
                                         status: :not_found)
 
-OpenStax::RescueFrom.register_exception(OAuth2::Error,
+OpenStax::RescueFrom.register_exception('OAuth2::Error',
                                         extras: ->(exception) {
                                           { headers: exception.response.headers,
                                             status: exception.response.status,
