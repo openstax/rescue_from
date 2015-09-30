@@ -25,6 +25,17 @@ module OpenStax
         RescueFrom.register_exception(ActionView::MissingTemplate,
                                       notify: false,
                                       status: :bad_request)
+
+        RescueFrom.register_exception('SecurityTransgression',
+                                      notify: false,
+                                      status: :forbidden)
+
+        RescueFrom.register_exception('OAuth2::Error',
+                                      extras: ->(ex) {
+                                        { headers: ex.response.headers,
+                                          status: ex.response.status,
+                                          body: ex.response.body }
+                                      })
       end
     end
   end

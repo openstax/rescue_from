@@ -18,14 +18,6 @@ OpenStax::RescueFrom.configure do |config|
   config.exception_recipients = 'notify@dummyapp.com'
 end
 
-OpenStax::RescueFrom.register_exception(SecurityTransgression,
-                                        notify: false,
-                                        status: :forbidden)
-
-OpenStax::RescueFrom.register_exception(OAuth2::Error,
-                                        notify: true,
-                                        extras: ->(exception) { 'found extras' })
-
 OpenStax::RescueFrom.translate_status_codes({
   forbidden: "You are not allowed to access this.",
   :not_found => "We couldn't find what you asked for.",
