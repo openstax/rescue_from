@@ -11,6 +11,8 @@ notifications:
   email: false
 addons:
    postgresql: "9.3"
+before_install:
+  - gem install bundler
 before_script:
   - export OXT_DB_USER=postgres
   - export OXT_DB_PASS=
