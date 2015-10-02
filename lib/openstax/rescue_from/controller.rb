@@ -8,7 +8,7 @@ module OpenStax
       module ClassMethods
         def use_openstax_exception_rescue
           rescue_from Exception do |exception|
-            RescueFrom.perform_rescue(exception: exception, listener: self)
+            RescueFrom.perform_rescue(exception, self)
           end
         end
       end

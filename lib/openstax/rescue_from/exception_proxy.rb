@@ -28,7 +28,7 @@ module OpenStax
       end
 
       def cause
-        @cause ||= exception.cause
+        @cause ||= exception.respond_to?(:cause) ? exception.cause : nil
       end
 
       def backtrace

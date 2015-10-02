@@ -1,6 +1,7 @@
 sudo: false
 language: ruby
 rvm:
+  - "1.9.3"
   - "2.2.3"
 cache: bundler
 bundler_args: --retry=6
@@ -10,6 +11,8 @@ notifications:
   email: false
 addons:
    postgresql: "9.3"
+before_install:
+  - gem install bundler
 before_script:
   - export OXT_DB_USER=postgres
   - export OXT_DB_PASS=

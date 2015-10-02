@@ -26,12 +26,15 @@ module OpenStax
             allow(described_class).to receive(:new) { logger }
             allow(logger).to receive(:record_system_error!).and_call_original
 
-            RescueFrom.perform_rescue(exception: e)
+            RescueFrom.perform_rescue(e)
 
             expect(logger).to have_received(:record_system_error!)
                               .with(no_args).once
-            expect(logger).to have_received(:record_system_error!)
-                              .with("Exception cause").once
+
+            if RUBY_VERSION.first != '1'
+              expect(logger).to have_received(:record_system_error!)
+                                .with("Exception cause").once
+            end
           end
         end
       end
