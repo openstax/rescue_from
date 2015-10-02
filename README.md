@@ -58,7 +58,7 @@ This configuration, which is placed in `./config/initializers/rescue_from.rb` by
 
 ```ruby
 OpenStax::RescueFrom.configure do |config|
-  config.raise_exceptions = ![false, 'false'].include?(ENV['RAISE_EXCEPTIONS'] ||
+  config.raise_exceptions = ![false, 'false'].include?(ENV['RAISE_EXCEPTIONS']) ||
                               Rails.application.config.consider_all_requests_local
 
   config.app_name = ENV['APP_NAME']
