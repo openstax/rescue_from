@@ -10,6 +10,10 @@ module OpenStax
           rescue_from Exception do |exception|
             RescueFrom.perform_rescue(exception, self)
           end
+
+          ActiveJob::Base.rescue_from Exception do |exception|
+            RescueFrom.perform_background_rescue(exception)
+          end
         end
       end
 

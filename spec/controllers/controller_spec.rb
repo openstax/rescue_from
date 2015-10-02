@@ -101,7 +101,9 @@ module Test
 
       expect(mail.from).to eq(['donotreply@dummyapp.com'])
       expect(mail.to).to eq(['notify@dummyapp.com'])
-      expect(mail.subject).to eq('[RescueFrom Dummy App] (DUM) # (ArgumentError) "ArgumentError"')
+      expect(mail.subject).to eq(
+        '[RescueFrom Dummy App] (DUM) # (ArgumentError) "ArgumentError"'
+      )
     end
 
     it 'sets message and code instance variables for html response' do

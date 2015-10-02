@@ -1,5 +1,6 @@
 require 'openstax/rescue_from/exception_options'
 require 'openstax/rescue_from/controller'
+require 'openstax/rescue_from/background_job'
 require 'openstax/rescue_from/view_helpers'
 require 'openstax/rescue_from/configuration'
 
@@ -8,20 +9,17 @@ module OpenStax
     class << self
       def perform_rescue(exception, listener = MuteListener.new)
         proxy = ExceptionProxy.new(exception)
-        register_unrecognized_exception(proxy.name)
+        register_unrecognized_exception(exception)
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
       end
 
-      def do_not_reraise
-        original = configuration.raise_exceptions
-        begin
-          configuration.raise_exceptions = false
-          yield
-        ensure
-          configuration.raise_exceptions = original
-        end
+      def perform_background_rescue(exception)
+        proxy = ExceptionProxy.new(exception)
+        register_unrecognized_exception(exception)
+        log_background_system_error(proxy)
+        send_notifying_background_exceptions(proxy)
       end
 
       def register_exception(exception, options = {})
@@ -103,8 +101,10 @@ module OpenStax
       end
 
       private
-      def options_for(name)
-        @@registered_exceptions[name]
+      def register_unrecognized_exception(exception)
+        unless registered_exceptions.keys.include?(exception.class.name)
+          register_exception(exception.class)
+        end
       end
 
       def friendly_status_messages
@@ -132,6 +132,11 @@ module OpenStax
         end
       end
 
+      def log_background_system_error(proxy)
+        logger = Logger.new(proxy)
+        logger.record_system_error!('A background exception occurred')
+      end
+
       def send_notifying_exceptions(proxy, listener)
         if notifies_for?(proxy.name)
           configuration.notifier.notify_exception(
@@ -144,6 +149,23 @@ module OpenStax
               first_line_of_backtrace: proxy.first_backtrace_line,
               cause: proxy.cause,
               dns_name: resolve_ip(listener.request.remote_ip),
+              extras: proxy.extras
+            },
+            sections: %w(data request session environment backtrace)
+          )
+        end
+      end
+
+      def send_notifying_background_exceptions(proxy)
+        if notifies_for?(proxy.name)
+          configuration.notifier.notify_exception(
+            proxy.exception,
+            data: {
+              error_id: proxy.error_id,
+              :class => proxy.name,
+              message: proxy.message,
+              first_line_of_backtrace: proxy.first_backtrace_line,
+              cause: proxy.cause,
               extras: proxy.extras
             },
             sections: %w(data request session environment backtrace)
