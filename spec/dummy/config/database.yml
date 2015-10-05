@@ -1,7 +1,5 @@
 test:
-  adapter: postgresql
-  encoding: unicode
+  adapter: sqlite3
+  database: db/test.sqlite3
   pool: 5
-  username: <%= ENV['OXT_DB_USER'] %>
-  password: <%= ENV['OXT_DB_PASS'] %>
-  database: <%= ENV['OXT_TEST_DB'] || 'dummy_test' %>
+  timeout: 5000
