@@ -49,3 +49,7 @@ end
 #
 # Default:
 #   - internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
+#   - not_found: 'Sorry, we could not find that resource.',
+#   - bad_request: 'The request was unrecognized.',
+#   - forbidden: 'You are not allowed to do that.'
+#   - unprocessable_entity: 'The entity could not be processed.'

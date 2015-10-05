@@ -76,7 +76,11 @@ module OpenStax
       private
       def friendly_status_messages
         @@friendly_status_messages ||= {
-          internal_server_error: default_friendly_message
+          internal_server_error: default_friendly_message,
+          :not_found => 'Sorry, we could not find that resource.',
+          bad_request: 'The request was unrecognized.',
+          forbidden: 'You are not allowed to do that.',
+          unprocessable_entity: 'The entity could not be processed.'
         }
       end
 
