@@ -1,7 +1,7 @@
 # RescueFrom
 
 [![Gem Version](https://badge.fury.io/rb/openstax_rescue_from.svg)](http://badge.fury.io/rb/openstax_rescue_from)
-[![Build Status](https://travis-ci.org/openstax/rescue-from.svg?branch=master)](https://travis-ci.org/openstax/rescue_from)
+[![Build Status](https://travis-ci.org/openstax/rescue_from.svg?branch=master)](https://travis-ci.org/openstax/rescue_from)
 [![Code Climate](https://codeclimate.com/github/openstax/rescue_from/badges/gpa.svg)](https://codeclimate.com/github/openstax/rescue_from)
 
 This is the gem that brings together disparate systems within OpenStax and abstracts consistent exception rescuing with html and json responses, and email notifying
