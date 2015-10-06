@@ -3,18 +3,6 @@ require 'openstax/rescue_from/default_exceptions'
 module OpenStax
   module RescueFrom
     class Engine < ::Rails::Engine
-      ActionController::Base.send :include, Controller
-
-      initializer 'openstax.rescue_from.inflection' do
-        ActiveSupport::Inflector.inflections do |inflect|
-          inflect.acronym 'OpenStax'
-        end
-      end
-
-      initializer "openstax.rescue_from.view_helpers" do
-        ActionView::Base.send :include, ViewHelpers
-      end
-
       initializer "openstax.rescue_from.use_exception_notification_middleware" do
         Rails.application.config.middleware.use ExceptionNotification::Rack, email: {
           email_prefix: RescueFrom.configuration.email_prefix,
@@ -29,3 +17,11 @@ module OpenStax
     end
   end
 end
+
+ActionController::Base.send :include, Controller
+
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.acronym 'OpenStax'
+end
+
+ActionView::Base.send :include, ViewHelpers
