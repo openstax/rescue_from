@@ -36,6 +36,10 @@ module OpenStax
                                           status: ex.response.status,
                                           body: ex.response.body }
                                       })
+
+        RescueFrom.register_exception('Apipie::ParamMissing',
+                                      notify: false,
+                                      status: :unprocessable_entity)
       end
     end
   end

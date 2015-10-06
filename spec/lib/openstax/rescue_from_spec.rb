@@ -48,5 +48,10 @@ RSpec.describe OpenStax::RescueFrom do
     expect(oauth_error.extras.call(exception)).to eq({ headers: 'headers',
                                                        status: 500,
                                                        body: 'bad times' })
+
+    apipie_param_missing = exceptions['Apipie::ParamMissing']
+    expect(apipie_param_missing).not_to be_notify
+    expect(apipie_param_missing.status_code).to be(:unprocessable_entity)
+    expect(apipie_param_missing.extras.call(nil)).to eq({})
   end
 end
