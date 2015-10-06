@@ -18,10 +18,10 @@ module OpenStax
   end
 end
 
-ActionController::Base.send :include, Controller
+ActionController::Base.send :include, OpenStax::RescueFrom::Controller
 
 ActiveSupport::Inflector.inflections do |inflect|
   inflect.acronym 'OpenStax'
 end
 
-ActionView::Base.send :include, ViewHelpers
+ActionView::Base.send :include, OpenStax::RescueFrom::ViewHelpers
