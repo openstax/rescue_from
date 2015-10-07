@@ -62,7 +62,7 @@ module OpenStax
       end
 
       def generate_id
-        "#{SecureRandom.random_number(10**6)}"
+        sprintf "%06d", "#{SecureRandom.random_number(10**6)}"
       end
 
       def configure
@@ -77,10 +77,10 @@ module OpenStax
       def friendly_status_messages
         @@friendly_status_messages ||= {
           internal_server_error: default_friendly_message,
-          :not_found => 'Sorry, we could not find that resource.',
+          :not_found => 'We could not find the requested information.',
           bad_request: 'The request was unrecognized.',
           forbidden: 'You are not allowed to do that.',
-          unprocessable_entity: 'The entity could not be processed.'
+          unprocessable_entity: 'Your browser asked for something that we cannot do.'
         }
       end
 
@@ -93,8 +93,10 @@ module OpenStax
       end
 
       def log_system_error(proxy)
-        logger = Logger.new(proxy)
-        logger.record_system_error!
+        if notifies_for?(proxy.name)
+          logger = Logger.new(proxy)
+          logger.record_system_error!
+        end
       end
 
       def send_notifying_exceptions(proxy, listener)
@@ -120,7 +122,7 @@ module OpenStax
         if configuration.raise_exceptions
           raise proxy.exception
         else
-          listener.openstax_exception_rescued(proxy)
+          listener.openstax_exception_rescued(proxy, notifies_for?(proxy))
         end
       end
     end

@@ -36,7 +36,7 @@ module Test
         get :bad_action, exception: ex
 
         expect(Rails.logger).to have_received(:error).with(
-          "An exception occurred: #{ex} [%06d123] <ex msg> {}\n\nbacktrace ln"
+          "An exception occurred: #{ex} [000123] <ex msg> {}\n\nbacktrace ln"
         )
       end
     end
@@ -59,7 +59,7 @@ module Test
 
         expected_status = OpenStax::RescueFrom.status(ex)
 
-        expect(JSON.parse(response.body)).to eq({ 'error_id' => '%06d123' })
+        expect(JSON.parse(response.body)).to eq({ 'error_id' => nil })
         expect(response).to have_http_status(expected_status),
           "expected #{expected_status}, got #{response.status} - for #{ex}"
       end
@@ -112,7 +112,7 @@ module Test
       get :bad_action, exception: 'ArgumentError'
 
       expect(assigns[:code]).to eq(500)
-      expect(assigns[:error_id]).to eq("%06d123")
+      expect(assigns[:error_id]).to eq("000123")
       expect(assigns[:message]).to eq(
         "Sorry, RescueFrom Dummy App had some unexpected trouble with your request."
       )

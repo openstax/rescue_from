@@ -44,7 +44,7 @@ class ApplicationController < ActionController::Base
   # Override the rescued hook which is called when configuration.raise_exceptions is false
   # (See 'Controller hook')
   #
-  # def openstax_exception_rescued(exception_proxy)
+  # def openstax_exception_rescued(exception_proxy, did_notify)
   #   app_name = openstax_rescue_config.app_name
   #     # RescueFrom.configuration private method available to you
   #
@@ -136,8 +136,14 @@ OpenStax::RescueFrom.translate_status_codes({
 #
 # -- check your OpenStax::RescueFrom.configuration.raise_exceptions setting --
 #
+# Params:
+#   exception_proxy - an OpenStax::RescueFrom::ExceptionProxy wrapper around
+#     the exception
+#   did_notify - true iff the exception was sent out to notification channels
+#     such as email or the log file
+#
 
-def openstax_exception_rescued(exception_proxy)
+def openstax_exception_rescued(exception_proxy, did_notify)
   @message = exception_proxy.friendly_message
   @status = exception_proxy.status
   @error_id = exception_proxy.error_id
