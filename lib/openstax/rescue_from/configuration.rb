@@ -5,8 +5,14 @@ module OpenStax
     class Configuration
 
       attr_accessor :raise_exceptions, :notifier, :html_error_template_path,
-        :html_error_template_layout_name, :app_name, :app_env, :contact_name,
+        :html_error_template_layout_name, :app_name, :app_env,
         :email_prefix, :sender_address, :exception_recipients
+
+      attr_writer :contact_name
+
+      def contact_name
+        @contact_name || "us"
+      end
 
       def initialize
         @raise_exceptions = ![false, 'false'].include?(ENV['RAISE_EXCEPTIONS'])
