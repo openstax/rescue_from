@@ -62,7 +62,7 @@ module OpenStax
       end
 
       def generate_id
-        "%06d#{SecureRandom.random_number(10**6)}"
+        "#{SecureRandom.random_number(10**6)}"
       end
 
       def configure
