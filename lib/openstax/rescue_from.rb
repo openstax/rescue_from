@@ -122,7 +122,7 @@ module OpenStax
         if configuration.raise_exceptions
           raise proxy.exception
         else
-          listener.openstax_exception_rescued(proxy, notifies_for?(proxy))
+          listener.openstax_exception_rescued(proxy, notifies_for?(proxy.name))
         end
       end
     end
