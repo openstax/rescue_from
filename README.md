@@ -126,6 +126,7 @@ def openstax_exception_rescued(exception_proxy, did_notify)
   @message = exception_proxy.friendly_message
   @status = exception_proxy.status
   @error_id = exception_proxy.error_id
+  @did_notify = did_notify
 
   respond_to do |f|
     f.html { render template: openstax_rescue_config.html_error_template_path,
