@@ -28,15 +28,15 @@ module OpenStax
       end
 
       def cause
-        @cause ||= exception.respond_to?(:cause) ? exception.cause : nil
+        @cause ||= if exception.respond_to?(:cause) && exception.cause
+                     ExceptionCauseProxy.new(exception.cause)
+                   else
+                     nil
+                   end
       end
 
-      def backtrace
-        @backtrace ||= cause.blank? ? first_backtrace_line : all_backtrace_lines
-      end
-
-      def all_backtrace_lines
-        @all_backtrace_lines ||= exception.backtrace.join("\n")
+      def logger_backtrace
+        @backtrace ||= exception.backtrace.join("\n")
       end
 
       def first_backtrace_line
