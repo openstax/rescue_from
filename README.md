@@ -79,7 +79,7 @@ OpenStax::RescueFrom.register_unrecognized_exception(SecurityTransgression)
 # when used with example above, the above example's options will prevail
 ```
 
-**Note:** If you want to degine `extras`, you **must** use a function that accepts `exception` as its argument
+**Note:** If you want to define `extras`, you **must** use a function that accepts `exception` as its argument
 
 ## Configuration
 
