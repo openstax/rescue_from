@@ -3,10 +3,6 @@ require './spec/support/test_controller'
 
 module Test
   RSpec.describe TestController do
-    let(:examples) { ['SecurityTransgression',
-                      'OAuth2::Error',
-                      'ActiveRecord::RecordNotFound'] }
-
     before do
       allow(SecureRandom).to receive(:random_number) { 123 }
     end
@@ -15,31 +11,29 @@ module Test
       before { OpenStax::RescueFrom.configure { |c| c.raise_exceptions = true } }
 
       it 'raises the exceptions' do
-        examples.each do |ex|
-          expect {
-            get :bad_action, exception: ex
-          }.to raise_error(ex.constantize)
-        end
+        ['SecurityTransgression', 'OAuth2::Error', 'ActiveRecord::RecordNotFound'].each { |e|
+          expect { get :bad_action, exception: e }.to raise_error(e.constantize)
+        }
       end
     end
 
-    examples.each do |ex|
-      it "logs the #{ex} exception" do
+    ['StandardError', 'OAuth2::Error'].each { |e|
+      it "logs the notifying exceptions (#{e})" do
         allow(Rails.logger).to receive(:error)
 
-        allow_any_instance_of(ex.constantize).to receive(:message) { 'ex msg' }
-        allow_any_instance_of(ex.constantize).to receive(:backtrace) { ['backtrace ln'] }
+        allow_any_instance_of(e.constantize).to receive(:message) { 'ex msg' }
+        allow_any_instance_of(e.constantize).to receive(:backtrace) { ['backtrace ln'] }
         allow_any_instance_of(OpenStax::RescueFrom::ExceptionProxy).to receive(:extras) {
           {}
         }
 
-        get :bad_action, exception: ex
+        get :bad_action, exception: e
 
         expect(Rails.logger).to have_received(:error).with(
-          "An exception occurred: #{ex} [000123] <ex msg> {}\n\nbacktrace ln"
+          "An exception occurred: #{e} [000123] <ex msg> {}\n\nbacktrace ln"
         )
       end
-    end
+    }
 
     it 'intercepts non notifying exceptions' do
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
