@@ -10,16 +10,15 @@ module OpenStax
       def record_system_error!(prefix = "An exception occurred")
         Rails.logger.error("#{prefix}: #{proxy.name} [#{proxy.error_id}] " +
                            "<#{proxy.message}> #{proxy.extras}\n\n" +
-                           "#{proxy.backtrace}")
+                           "#{proxy.logger_backtrace}")
 
         record_system_error_recursively!
       end
 
       private
       def record_system_error_recursively!
-        if proxy.cause
-          RescueFrom.register_exception(proxy.cause.class)
-          @proxy = ExceptionProxy.new(proxy.cause)
+        if @proxy = proxy.cause
+          RescueFrom.register_exception(proxy.name)
           record_system_error!("Exception cause")
         end
       end
