@@ -20,9 +20,9 @@ module OpenStax
         @@registered_exceptions[name] = ExceptionOptions.new(options)
       end
 
-      def register_unrecognized_exception(exception_class)
+      def register_unrecognized_exception(exception_class, options = {})
         unless registered_exceptions.keys.include?(exception_class)
-          register_exception(exception_class)
+          register_exception(exception_class, options)
         end
       end
 
