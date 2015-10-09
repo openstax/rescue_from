@@ -56,6 +56,31 @@ class ApplicationController < ActionController::Base
 end
 ```
 
+## Registering Exceptions
+
+```ruby
+# Use OpenStax::RescueFrom.register_exception(exception_constant_or_string, options = {})
+# to register new exceptions or override the options of existing ones
+
+OpenStax::RescueFrom.register_exception(SecurityTransgression, notify: true,
+                                                               status: 500,
+                                                               extras: -> (exception) {
+                                                                 { headers: exception.response.headers }
+                                                               })
+
+OpenStax::RescueFrom.register_exception('ActiveRecord::RecordNotFound', notify: false,
+                                                                        status: 403)
+
+# Use OpenStax::RescueFrom.register_unrecognized_exception(exception_constant_or_string, options = {})
+# to register ONLY unrecognized exceptions, to avoid accidental overwriting of options
+
+OpenStax::RescueFrom.register_unrecognized_exception(SecurityTransgression)
+
+# when used with example above, the above example's options will prevail
+```
+
+**Note:** You **must** use a function that accepts `exception` as an argument for `extras`
+
 ## Configuration
 
 This configuration, which is placed in `./config/initializers/rescue_from.rb` by the install generator, shows the defaults:
