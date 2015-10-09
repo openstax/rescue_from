@@ -106,52 +106,6 @@ OpenStax::RescueFrom.configure do |config|
 end
 ```
 
-## Registering exceptions
-
-In `./config/initializers/rescue_from.rb` it is recommended you register your exceptions
-
-Note that any unregistered exceptions rescued during run-time will be registered with the default options. See below.
-
-```ruby
-require 'openstax_rescue_from'
-
-OpenStax::RescueFrom.configure do |c|
-  # c.app_name ...
-end
-
-# OpenStax::RescueFrom#register_exception default options:
-#
-# { notify: true,
-#   status: :internal_server_error,
-#   extras: ->(exception) { {} } }
-#
-# Any unregistered exceptions rescued during run-time
-# will be registered during rescue with the options above
-
-OpenStax::RescueFrom.register_exception('SecurityTransgression',
-                                        notify: false,
-                                        status: :forbidden)
-
-OpenStax::RescueFrom.register_exception(ActiveRecord::NotFound,
-                                        notify: false,
-                                        status: :not_found)
-
-OpenStax::RescueFrom.register_exception('OAuth2::Error',
-                                        extras: ->(exception) {
-                                          { headers: exception.response.headers,
-                                            status: exception.response.status,
-                                            body: exception.response.body }
-                                        })
-
-OpenStax::RescueFrom.translate_status_codes({
-  forbidden: 'You are not allowed to access this.',
-  not_found: 'We couldn't find what you asked for.',
-})
-#
-# Default:
-#   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
-```
-
 ## Controller hook
 ```ruby
 #
