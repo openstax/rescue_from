@@ -118,7 +118,7 @@ end
 # Params:
 #   exception_proxy - an OpenStax::RescueFrom::ExceptionProxy wrapper around
 #     the exception
-#   did_notify - true iff the exception was sent out to notification channels
+#   did_notify - true if the exception was sent out to notification channels
 #     such as email or the log file
 #
 
