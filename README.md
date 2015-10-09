@@ -62,14 +62,13 @@ end
 # Use OpenStax::RescueFrom.register_exception(exception_constant_or_string, options = {})
 # to register new exceptions or override the options of existing ones
 
-OpenStax::RescueFrom.register_exception(SecurityTransgression, notify: true,
-                                                               status: 500,
+OpenStax::RescueFrom.register_exception(SecurityTransgression, status: 403,
                                                                extras: -> (exception) {
                                                                  { headers: exception.response.headers }
                                                                })
 
 OpenStax::RescueFrom.register_exception('ActiveRecord::RecordNotFound', notify: false,
-                                                                        status: 403)
+                                                                        status: 404)
 
 # Use OpenStax::RescueFrom.register_unrecognized_exception(exception_constant_or_string, options = {})
 # to register ONLY unrecognized exceptions, to avoid accidental overwriting of options
@@ -77,6 +76,12 @@ OpenStax::RescueFrom.register_exception('ActiveRecord::RecordNotFound', notify: 
 OpenStax::RescueFrom.register_unrecognized_exception(SecurityTransgression)
 
 # when used with example above, the above example's options will prevail
+
+# Default options:
+#
+# { notify: true,
+#   status: :internal_server_error,
+#   extras: ->(exception) { {} } }
 ```
 
 **Note:** If you want to define `extras`, you **must** use a function that accepts `exception` as its argument
