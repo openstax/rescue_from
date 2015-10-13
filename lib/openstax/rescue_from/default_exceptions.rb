@@ -40,6 +40,10 @@ module OpenStax
         RescueFrom.register_exception('Apipie::ParamMissing',
                                       notify: false,
                                       status: :unprocessable_entity)
+
+        RescueFrom.register_exception(ActionController::UnknownHttpMethod,
+                                      notify: false,
+                                      status: :bad_request)
       end
     end
   end

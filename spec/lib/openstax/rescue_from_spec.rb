@@ -53,5 +53,10 @@ RSpec.describe OpenStax::RescueFrom do
     expect(apipie_param_missing).not_to be_notify
     expect(apipie_param_missing.status_code).to be(:unprocessable_entity)
     expect(apipie_param_missing.extras.call(nil)).to eq({})
+
+    unknown_http_method = exceptions['ActionController::UnknownHttpMethod']
+    expect(unknown_http_method).not_to be_notify
+    expect(unknown_http_method.status_code).to be(:bad_request)
+    expect(unknown_http_method.extras.call(nil)).to eq({})
   end
 end
