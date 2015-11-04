@@ -20,7 +20,7 @@ module OpenStax
       end
 
       def friendly_message
-        RescueFrom.friendly_message(status)
+        RescueFrom.friendly_message(self)
       end
 
       def extras
