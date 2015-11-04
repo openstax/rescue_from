@@ -1,6 +1,8 @@
 require 'rails_helper'
 require './spec/support/test_controller'
 
+class CustomError < StandardError; end
+
 module Test
   RSpec.describe TestController do
     before do
@@ -110,6 +112,20 @@ module Test
       expect(assigns[:message]).to eq(
         "Sorry, RescueFrom Dummy App had some unexpected trouble with your request."
       )
+    end
+
+    context 'custom messages override status code messages' do
+      before { OpenStax::RescueFrom.configure { |c| c.raise_exceptions = false } }
+
+      it 'allows the developer to set a custom message' do
+        OpenStax::RescueFrom.register_exception(CustomError,
+                                                message: 'This dang custom error')
+
+        get :bad_action, exception: 'CustomError'
+
+        expect(assigns[:code]).to eq(500)
+        expect(assigns[:message]).to eq('This dang custom error')
+      end
     end
   end
 end
