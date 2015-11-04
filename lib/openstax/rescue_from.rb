@@ -18,9 +18,7 @@ module OpenStax
         name = exception.is_a?(String) ? exception : exception.name
         options = ExceptionOptions.new(options)
         @@registered_exceptions ||= {}
-        @@friendly_status_messages ||= {}
         @@registered_exceptions[name] = options
-        @@friendly_status_messages[name] = options.message if options.message
       end
 
       def register_unrecognized_exception(exception_class, options = {})
@@ -47,9 +45,9 @@ module OpenStax
         @@registered_exceptions.select { |_, v| v.notify? }.keys
       end
 
-      def friendly_message(exception)
-        friendly_status_messages[exception.name] ||
-          friendly_status_messages[exception.status] ||
+      def friendly_message(proxy)
+        options_for(proxy.name).message ||
+          friendly_status_messages[proxy.status] ||
             default_friendly_message
       end
 
@@ -82,6 +80,10 @@ module OpenStax
       end
 
       private
+      def options_for(name)
+        @@registered_exceptions[name]
+      end
+
       def friendly_status_messages
         @@friendly_status_messages ||= {
           internal_server_error: default_friendly_message,
