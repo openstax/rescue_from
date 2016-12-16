@@ -19,7 +19,14 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "rails", '>= 3.1', '< 5.0'
-  spec.add_dependency "exception_notification", '>= 4.1', '< 5.0'
+
+
+  if RUBY_VERSION < '2.0'
+    spec.add_dependency 'mime-types', '<= 2.6.2'
+    spec.add_dependency 'exception_notification', '<= 4.1.1'
+  else
+    spec.add_dependency "exception_notification", '>= 4.1', '< 5.0'
+  end
 
   spec.add_development_dependency "sqlite3", '~> 1.3.10'
   spec.add_development_dependency "bundler", "~> 1.10"

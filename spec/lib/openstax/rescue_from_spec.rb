@@ -59,4 +59,10 @@ RSpec.describe OpenStax::RescueFrom do
     expect(unknown_http_method.status_code).to be(:bad_request)
     expect(unknown_http_method.extras.call(nil)).to eq({})
   end
+
+  it 'rescues from specific blocks of code' do
+    an_exception = StandardError.new
+    expect(OpenStax::RescueFrom).to receive(:perform_rescue).with(an_exception)
+    OpenStax::RescueFrom.this{ raise an_exception }
+  end
 end

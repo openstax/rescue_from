@@ -27,6 +27,15 @@ module OpenStax
         end
       end
 
+      # For rescuing from specific blocks of code: OpenStax::RescueFrom.this{...}
+      def this
+        begin
+          yield
+        rescue Exception => e
+          perform_rescue(e)
+        end
+      end
+
       def translate_status_codes(map = {})
         map.each do |k, v|
           friendly_status_messages[k] = v
