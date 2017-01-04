@@ -44,6 +44,10 @@ module OpenStax
         RescueFrom.register_exception(ActionController::UnknownHttpMethod,
                                       notify: false,
                                       status: :bad_request)
+
+        RescueFrom.register_exception(ActionController::ParameterMissing,
+                                      notify: false,
+                                      status: :bad_request)
       end
     end
   end

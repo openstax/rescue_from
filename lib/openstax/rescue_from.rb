@@ -96,7 +96,7 @@ module OpenStax
       def friendly_status_messages
         @@friendly_status_messages ||= {
           internal_server_error: default_friendly_message,
-          :not_found => 'We could not find the requested information.',
+          not_found: 'We could not find the requested information.',
           bad_request: 'The request was unrecognized.',
           forbidden: 'You are not allowed to do that.',
           unprocessable_entity: 'Your browser asked for something that we cannot do.'
@@ -125,7 +125,7 @@ module OpenStax
             env: listener.request.env,
             data: {
               error_id: proxy.error_id,
-              :class => proxy.name,
+              class: proxy.name,
               message: proxy.message,
               first_line_of_backtrace: proxy.first_backtrace_line,
               cause: proxy.cause,

@@ -4,7 +4,7 @@ require './spec/support/test_controller'
 class CustomError < StandardError; end
 
 module Test
-  RSpec.describe TestController do
+  RSpec.describe TestController, type: :controller do
     before do
       allow(SecureRandom).to receive(:random_number) { 123 }
     end
@@ -13,13 +13,13 @@ module Test
       before { OpenStax::RescueFrom.configure { |c| c.raise_exceptions = true } }
 
       it 'raises the exceptions' do
-        ['SecurityTransgression', 'OAuth2::Error', 'ActiveRecord::RecordNotFound'].each { |e|
+        ['SecurityTransgression', 'OAuth2::Error', 'ActiveRecord::RecordNotFound'].each do |e|
           expect { get :bad_action, exception: e }.to raise_error(e.constantize)
-        }
+        end
       end
     end
 
-    ['StandardError', 'OAuth2::Error'].each { |e|
+    ['StandardError', 'OAuth2::Error'].each do |e|
       it "logs the notifying exceptions (#{e})" do
         allow(Rails.logger).to receive(:error)
 
@@ -35,7 +35,7 @@ module Test
           "An exception occurred: #{e} [000123] <ex msg> {}\n\nbacktrace ln"
         )
       end
-    }
+    end
 
     it 'intercepts non notifying exceptions' do
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
@@ -118,8 +118,7 @@ module Test
       before { OpenStax::RescueFrom.configure { |c| c.raise_exceptions = false } }
 
       it 'allows the developer to set a custom message' do
-        OpenStax::RescueFrom.register_exception(CustomError,
-                                                message: 'This dang custom error')
+        OpenStax::RescueFrom.register_exception(CustomError, message: 'This dang custom error')
 
         get :bad_action, exception: 'CustomError'
 
