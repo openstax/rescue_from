@@ -4,14 +4,18 @@ module Test
 
     def bad_action
       ex = params[:exception]
+      ex_class = ex.constantize
+
       raise case ex
-            when 'ActionController::RoutingError'
-              ex.constantize.new('Not found')
-            when 'ActionView::MissingTemplate'
-              ex.constantize.new(['some/path', 'other/path'], 'some/path', [], nil, '')
-            else
-              ex.constantize
-            end
+      when 'ActionController::RoutingError'
+        ex_class.new('Not found')
+      when 'ActionController::ParameterMissing'
+        ex_class.new('a_param')
+      when 'ActionView::MissingTemplate'
+        ex_class.new(['some/path', 'other/path'], 'some/path', [], nil, '')
+      else
+        ex_class.new
+      end
     end
   end
 

@@ -58,6 +58,11 @@ RSpec.describe OpenStax::RescueFrom do
     expect(unknown_http_method).not_to be_notify
     expect(unknown_http_method.status_code).to be(:bad_request)
     expect(unknown_http_method.extras.call(nil)).to eq({})
+
+    parameter_missing = exceptions['ActionController::ParameterMissing']
+    expect(parameter_missing).not_to be_notify
+    expect(parameter_missing.status_code).to be(:bad_request)
+    expect(parameter_missing.extras.call(nil)).to eq({})
   end
 
   it 'rescues from specific blocks of code' do

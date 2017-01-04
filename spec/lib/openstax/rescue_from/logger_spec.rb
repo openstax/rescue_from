@@ -28,12 +28,10 @@ module OpenStax
 
             RescueFrom.perform_rescue(e)
 
-            expect(logger).to have_received(:record_system_error!)
-                              .with(no_args).once
+            expect(logger).to have_received(:record_system_error!).with(no_args).once
 
             if RUBY_VERSION.first != '1'
-              expect(logger).to have_received(:record_system_error!)
-                                .with("Exception cause").once
+              expect(logger).to have_received(:record_system_error!).with("Exception cause").once
             end
           end
         end
