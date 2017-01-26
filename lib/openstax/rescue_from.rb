@@ -14,6 +14,16 @@ module OpenStax
         finish_exception_rescue(proxy, listener)
       end
 
+      def do_not_reraise
+        original = configuration.raise_exceptions
+        begin
+          configuration.raise_exceptions = false
+          yield
+        ensure
+          configuration.raise_exceptions = original
+        end
+      end
+
       def register_exception(exception, options = {})
         name = exception.is_a?(String) ? exception : exception.name
         options = ExceptionOptions.new(options)

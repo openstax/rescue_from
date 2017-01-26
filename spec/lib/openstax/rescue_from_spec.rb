@@ -70,4 +70,21 @@ RSpec.describe OpenStax::RescueFrom do
     expect(OpenStax::RescueFrom).to receive(:perform_rescue).with(an_exception)
     OpenStax::RescueFrom.this{ raise an_exception }
   end
+
+  context '#do_not_reraise' do
+    it 'turns off reraising' do
+      original = OpenStax::RescueFrom.configuration.raise_exceptions
+      OpenStax::RescueFrom.configuration.raise_exceptions = true
+
+      begin
+        expect{
+          OpenStax::RescueFrom.do_not_reraise {
+            OpenStax::RescueFrom.this{ raise StandardError }
+          }
+        }.not_to raise_error
+      ensure
+        OpenStax::RescueFrom.configuration.raise_exceptions = original
+      end
+    end
+  end
 end
