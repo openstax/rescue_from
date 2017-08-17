@@ -78,6 +78,10 @@ module OpenStax
         @@registered_exceptions[exception_name].status_code
       end
 
+      def sorry(exception_name)
+        @@registered_exceptions[exception_name].sorry
+      end
+
       def http_code(status)
         Rack::Utils.status_code(status)
       end

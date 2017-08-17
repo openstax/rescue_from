@@ -50,6 +50,12 @@ module OpenStax
       def status_code
         @status_code ||= RescueFrom.http_code(status)
       end
+
+      def sorry
+        return @sorry unless @sorry.nil?
+
+        @sorry = RescueFrom.sorry(name)
+      end
     end
   end
 end
