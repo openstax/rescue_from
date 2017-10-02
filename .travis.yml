@@ -9,7 +9,7 @@ script:
 notifications:
   email: false
 addons:
-   postgresql: "9.3"
+   postgresql: "9.5"
 before_install:
   - gem install bundler
 before_script:
