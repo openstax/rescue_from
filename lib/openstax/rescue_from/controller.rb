@@ -17,6 +17,7 @@ module OpenStax
         @message = proxy.friendly_message
         @code = proxy.status_code
         @error_id = proxy.error_id
+        @sorry = proxy.sorry
         @did_notify = did_notify
 
         respond_to do |f|
