@@ -1,6 +1,6 @@
 require 'rails/generators'
 
-module OpenStax
+module Openstax
   module RescueFrom
     class InstallGenerator < Rails::Generators::Base
       source_root File.expand_path("../templates", __FILE__)

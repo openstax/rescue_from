@@ -2,8 +2,9 @@
 
 begin
   require 'bundler/setup'
-rescue LoadError
+rescue LoadError => exception
   puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
+  raise exception
 end
 
 APP_RAKEFILE = File.expand_path('../spec/dummy/Rakefile', __FILE__)
@@ -14,7 +15,7 @@ Bundler::GemHelper.install_tasks
 require 'rspec/core'
 require 'rspec/core/rake_task'
 
-desc "Run all specs in spec directory (excluding plugin specs)"
-RSpec::Core::RakeTask.new(:spec)
+desc 'Run all specs in spec directory (excluding plugin specs)'
+RSpec::Core::RakeTask.new(spec: 'app:db:test:prepare')
 
-task :default => :spec
+task default: :spec

@@ -1,5 +1,6 @@
 require 'openstax/rescue_from/exception_options'
 require 'openstax/rescue_from/controller'
+require 'openstax/rescue_from/background_job'
 require 'openstax/rescue_from/view_helpers'
 require 'openstax/rescue_from/configuration'
 
@@ -12,6 +13,14 @@ module OpenStax
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
+      end
+
+      def perform_background_rescue(exception)
+        proxy = ExceptionProxy.new(exception)
+        register_unrecognized_exception(proxy.name)
+        log_background_system_error(proxy)
+        send_notifying_background_exceptions(proxy)
+        finish_background_exception_rescue(proxy)
       end
 
       def do_not_reraise
@@ -132,6 +141,11 @@ module OpenStax
         end
       end
 
+      def log_background_system_error(proxy)
+        logger = Logger.new(proxy)
+        logger.record_system_error!('A background job exception occurred')
+      end
+
       def send_notifying_exceptions(proxy, listener)
         if notifies_for?(proxy.name)
           configuration.notifier.notify_exception(
@@ -151,12 +165,33 @@ module OpenStax
         end
       end
 
+      def send_notifying_background_exceptions(proxy)
+        if notifies_for?(proxy.name)
+          configuration.notifier.notify_exception(
+            proxy.exception,
+            data: {
+              error_id: proxy.error_id,
+              class: proxy.name,
+              message: proxy.message,
+              first_line_of_backtrace: proxy.first_backtrace_line,
+              cause: proxy.cause,
+              extras: proxy.extras
+            },
+            sections: %w(data environment backtrace)
+          )
+        end
+      end
+
       def finish_exception_rescue(proxy, listener)
         if configuration.raise_exceptions
           raise proxy.exception
         else
           listener.openstax_exception_rescued(proxy, notifies_for?(proxy.name))
         end
+      end
+
+      def finish_background_exception_rescue(proxy)
+        raise proxy.exception
       end
     end
   end

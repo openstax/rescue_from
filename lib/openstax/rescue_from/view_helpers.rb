@@ -16,3 +16,5 @@ module OpenStax
     end
   end
 end
+
+ActionView::Base.send :include, OpenStax::RescueFrom::ViewHelpers

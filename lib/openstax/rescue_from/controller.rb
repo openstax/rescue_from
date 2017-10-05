@@ -28,7 +28,7 @@ module OpenStax
           f.json { render json: { error_id: did_notify ? proxy.error_id : nil },
                           status: proxy.status }
 
-          f.all { render nothing: true, status: proxy.status }
+          f.all { head proxy.status }
         end
       end
 
@@ -39,3 +39,5 @@ module OpenStax
     end
   end
 end
+
+ActionController::Base.send :include, OpenStax::RescueFrom::Controller
