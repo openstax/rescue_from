@@ -1,11 +1,9 @@
 require 'rails_helper'
-require './spec/support/test_controller'
-require './spec/support/test_job'
 
 RSpec.describe ActiveJob do
-  let(:examples) { ['SecurityTransgression',
-                    'OAuth2::Error',
-                    'ActiveRecord::RecordNotFound'] }
+  let(:examples) do
+    ['SecurityTransgression', 'OAuth2::Error', 'ActiveRecord::RecordNotFound']
+  end
 
   before do
     allow(SecureRandom).to receive(:random_number) { 123 }
@@ -13,7 +11,7 @@ RSpec.describe ActiveJob do
 
   examples.each do |ex|
     it "logs the #{ex} exception" do
-      allow(Rails.logger).to receive(:error)
+      expect(Rails.logger).to receive(:error)
 
       allow_any_instance_of(ex.constantize).to receive(:message) { 'ex msg' }
       allow_any_instance_of(ex.constantize).to receive(:backtrace) { ['backtrace ln'] }
@@ -43,11 +41,11 @@ RSpec.describe ActiveJob do
     end
   end
 
-  it 'emails for other exceptions' do
+  it 'emails for other StandardErrors' do
     ActionMailer::Base.deliveries.clear
 
     begin
-      TestJob.perform_later('Exception')
+      TestJob.perform_later('StandardError')
     rescue
       expect(ActionMailer::Base.deliveries).not_to be_empty
 
@@ -56,7 +54,7 @@ RSpec.describe ActiveJob do
       expect(mail.from).to eq(['donotreply@dummyapp.com'])
       expect(mail.to).to eq(['notify@dummyapp.com'])
       expect(mail.subject).to eq(
-        '[RescueFrom Dummy App] (DUM) # (ArgumentError) "ArgumentError"'
+        '[RescueFrom Dummy App] (DUM) (StandardError) "StandardError"'
       )
     end
   end

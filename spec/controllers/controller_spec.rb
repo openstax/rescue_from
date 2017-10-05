@@ -1,5 +1,4 @@
 require 'rails_helper'
-require './spec/support/test_controller'
 
 class CustomError < StandardError; end
 
@@ -13,33 +12,33 @@ module Test
       before { OpenStax::RescueFrom.configure { |c| c.raise_exceptions = true } }
 
       it 'raises the exceptions' do
-        ['SecurityTransgression', 'OAuth2::Error', 'ActiveRecord::RecordNotFound'].each do |e|
-          expect { get :bad_action, exception: e }.to raise_error(e.constantize)
+        ['SecurityTransgression', 'OAuth2::Error', 'ActiveRecord::RecordNotFound'].each do |ex|
+          expect { get :bad_action, params: { exception: ex } }.to raise_error(ex.constantize)
         end
       end
     end
 
-    ['StandardError', 'OAuth2::Error'].each do |e|
-      it "logs the notifying exceptions (#{e})" do
+    ['StandardError', 'OAuth2::Error'].each do |ex|
+      it "logs the notifying exceptions (#{ex})" do
         allow(Rails.logger).to receive(:error)
 
-        allow_any_instance_of(e.constantize).to receive(:message) { 'ex msg' }
-        allow_any_instance_of(e.constantize).to receive(:backtrace) { ['backtrace ln'] }
+        allow_any_instance_of(ex.constantize).to receive(:message) { 'ex msg' }
+        allow_any_instance_of(ex.constantize).to receive(:backtrace) { ['backtrace ln'] }
         allow_any_instance_of(OpenStax::RescueFrom::ExceptionProxy).to receive(:extras) {
           {}
         }
 
-        get :bad_action, exception: e
+        get :bad_action, params: { exception: ex }
 
         expect(Rails.logger).to have_received(:error).with(
-          "An exception occurred: #{e} [000123] <ex msg> {}\n\nbacktrace ln"
+          "An exception occurred: #{ex} [000123] <ex msg> {}\n\nbacktrace ln"
         )
       end
     end
 
     it 'intercepts non notifying exceptions' do
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
-        get :bad_action, exception: ex
+        get :bad_action, params: { exception: ex }
 
         expected_status = OpenStax::RescueFrom.status(ex)
 
@@ -51,7 +50,7 @@ module Test
 
     it 'intercepts these non notifying exceptions for json requests' do
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
-        get :bad_action, exception: ex, format: :json
+        get :bad_action, params: { exception: ex }, format: :json
 
         expected_status = OpenStax::RescueFrom.status(ex)
 
@@ -65,7 +64,7 @@ module Test
       formats = [:xsl, :php, :doc, :pdf, :csv, :xml]
 
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
-        get :bad_action, exception: ex, format: formats.sample
+        get :bad_action, params: { exception: ex }, format: formats.sample
 
         expected_status = OpenStax::RescueFrom.status(ex)
 
@@ -76,7 +75,7 @@ module Test
     end
 
     it 'uses 500 for unknown exceptions in the status map' do
-      get :bad_action, exception: 'OAuth2::Error'
+      get :bad_action, params: { exception: 'OAuth2::Error' }
       expect(response).to have_http_status(500)
       expect(response).to render_template('errors/any')
     end
@@ -85,7 +84,7 @@ module Test
       ActionMailer::Base.deliveries.clear
 
       OpenStax::RescueFrom.non_notifying_exceptions.each do |ex|
-        get :bad_action, exception: ex
+        get :bad_action, params: { exception: ex }
         expect(ActionMailer::Base.deliveries).to be_empty
       end
     end
@@ -93,7 +92,7 @@ module Test
     it 'emails for other exceptions' do
       ActionMailer::Base.deliveries.clear
 
-      get :bad_action, exception: 'ArgumentError'
+      get :bad_action, params: { exception: 'ArgumentError' }
 
       expect(ActionMailer::Base.deliveries).not_to be_empty
 
@@ -102,12 +101,12 @@ module Test
       expect(mail.from).to eq(['donotreply@dummyapp.com'])
       expect(mail.to).to eq(['notify@dummyapp.com'])
       expect(mail.subject).to eq(
-        '[RescueFrom Dummy App] (DUM) # (ArgumentError) "ArgumentError"'
+        '[RescueFrom Dummy App] (DUM) test#bad_action (ArgumentError) "ArgumentError"'
       )
     end
 
     it 'sets message and code instance variables for html response' do
-      get :bad_action, exception: 'ArgumentError'
+      get :bad_action, params: { exception: 'ArgumentError' }
 
       expect(assigns[:code]).to eq(500)
       expect(assigns[:error_id]).to eq("000123")
@@ -122,7 +121,7 @@ module Test
       it 'allows the developer to set a custom message' do
         OpenStax::RescueFrom.register_exception(CustomError, message: 'This dang custom error')
 
-        get :bad_action, exception: 'CustomError'
+        get :bad_action, params: { exception: 'CustomError' }
 
         expect(assigns[:code]).to eq(500)
         expect(assigns[:message]).to eq('This dang custom error')

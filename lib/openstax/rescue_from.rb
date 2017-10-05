@@ -9,7 +9,7 @@ module OpenStax
     class << self
       def perform_rescue(exception, listener = MuteListener.new)
         proxy = ExceptionProxy.new(exception)
-        register_unrecognized_exception(exception)
+        register_unrecognized_exception(proxy.name)
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
@@ -17,9 +17,20 @@ module OpenStax
 
       def perform_background_rescue(exception)
         proxy = ExceptionProxy.new(exception)
-        register_unrecognized_exception(exception)
+        register_unrecognized_exception(proxy.name)
         log_background_system_error(proxy)
         send_notifying_background_exceptions(proxy)
+        finish_background_exception_rescue(proxy)
+      end
+
+      def do_not_reraise
+        original = configuration.raise_exceptions
+        begin
+          configuration.raise_exceptions = false
+          yield
+        ensure
+          configuration.raise_exceptions = original
+        end
       end
 
       def register_exception(exception, options = {})
@@ -101,10 +112,8 @@ module OpenStax
       end
 
       private
-      def register_unrecognized_exception(exception)
-        unless registered_exceptions.keys.include?(exception.class.name)
-          register_exception(exception.class)
-        end
+      def options_for(name)
+        @@registered_exceptions[name]
       end
 
       def friendly_status_messages
@@ -134,7 +143,7 @@ module OpenStax
 
       def log_background_system_error(proxy)
         logger = Logger.new(proxy)
-        logger.record_system_error!('A background exception occurred')
+        logger.record_system_error!('A background job exception occurred')
       end
 
       def send_notifying_exceptions(proxy, listener)
@@ -162,13 +171,13 @@ module OpenStax
             proxy.exception,
             data: {
               error_id: proxy.error_id,
-              :class => proxy.name,
+              class: proxy.name,
               message: proxy.message,
               first_line_of_backtrace: proxy.first_backtrace_line,
               cause: proxy.cause,
               extras: proxy.extras
             },
-            sections: %w(data request session environment backtrace)
+            sections: %w(data environment backtrace)
           )
         end
       end
@@ -179,6 +188,10 @@ module OpenStax
         else
           listener.openstax_exception_rescued(proxy, notifies_for?(proxy.name))
         end
+      end
+
+      def finish_background_exception_rescue(proxy)
+        raise proxy.exception
       end
     end
   end

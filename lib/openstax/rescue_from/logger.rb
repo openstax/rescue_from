@@ -1,24 +1,26 @@
 module OpenStax
   module RescueFrom
     class Logger
-      attr_reader :proxy
+      attr_reader :exception_proxy, :logger
 
-      def initialize(proxy)
-        @proxy = proxy
+      def initialize(exception_proxy, logger = Rails.logger)
+        @exception_proxy = exception_proxy
+        @logger = logger
       end
 
       def record_system_error!(prefix = "An exception occurred")
-        Rails.logger.error("#{prefix}: #{proxy.name} [#{proxy.error_id}] " +
-                           "<#{proxy.message}> #{proxy.extras}\n\n" +
-                           "#{proxy.logger_backtrace}")
+        logger.error("#{prefix}: #{exception_proxy.name} [#{exception_proxy.error_id}] " +
+                     "<#{exception_proxy.message}> #{exception_proxy.extras}\n\n" +
+                     "#{exception_proxy.logger_backtrace}")
 
         record_system_error_recursively!
       end
 
       private
       def record_system_error_recursively!
-        if @proxy = proxy.cause
-          RescueFrom.register_unrecognized_exception(proxy.name)
+        if exception_proxy.cause
+          RescueFrom.register_exception(exception_proxy.cause.class)
+          @exception_proxy = ExceptionProxy.new(exception_proxy.cause)
           record_system_error!("Exception cause")
         end
       end

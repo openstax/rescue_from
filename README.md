@@ -27,20 +27,13 @@ Or install it yourself as:
 Run the install generator to get the config initializer
 
 ```
-$ rails g open_stax:rescue_from:install
+$ rails g openstax:rescue_from:install
 ```
 
-Declare that you want to use the openstax exception rescuer in your controller, preferably your `ApplicationController`
+You can override the controller action that renders the error templates:
 
 ```ruby
 class ApplicationController < ActionController::Base
-
-  # ...
-
-  use_openstax_exception_rescue
-
-  # ...
-
   # Override the rescued hook which is called when configuration.raise_exceptions is false
   # (See 'Controller hook')
   #
@@ -49,7 +42,7 @@ class ApplicationController < ActionController::Base
   #     # RescueFrom.configuration private method available to you
   #
   #   respond_to do |f|
-  #     f.xml { render text: "I respond strangely to the XML format!",
+  #     f.xml { render plain: "I respond strangely to the XML format!",
   #                    status: exception_proxy.status }
   #   end
   # end
@@ -109,6 +102,15 @@ OpenStax::RescueFrom.configure do |config|
   config.sender_address = ENV['EXCEPTION_SENDER']
   config.exception_recipients = ENV['EXCEPTION_RECIPIENTS']
 end
+
+# Exceptions in controllers might be reraised or not depending on the settings above
+ActionController::Base.use_openstax_exception_rescue
+
+# RescueFrom always reraises background exceptions so that the background job may properly fail
+ActiveJob::Base.use_openstax_exception_rescue
+
+# URL generation errors are caused by bad routes, for example, and should not be ignored
+ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
 ```
 
 ## Controller hook
@@ -139,7 +141,7 @@ def openstax_exception_rescued(exception_proxy, did_notify)
                     status: exception_proxy.status }
     f.json { render json: { error_id: exception_proxy.error_id }
                     status: exception_proxy.status }
-    f.all { render nothing: true, status: exception_proxy.status }
+    f.all { head exception_proxy.status }
   end
 end
 

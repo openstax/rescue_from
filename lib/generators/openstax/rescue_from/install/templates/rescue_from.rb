@@ -18,6 +18,15 @@ OpenStax::RescueFrom.configure do |config|
   # config.exception_recipients = ENV['EXCEPTION_RECIPIENTS']
 end
 
+# Exceptions in controllers might be reraised or not depending on the settings above
+ActionController::Base.use_openstax_exception_rescue
+
+# RescueFrom always reraises background exceptions so that the background job may properly fail
+ActiveJob::Base.use_openstax_exception_rescue
+
+# URL generation errors are caused by bad routes, for example, and should not be ignored
+ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
+
 # OpenStax::RescueFrom#register_exception default options:
 #
 # { notify: true,
@@ -44,7 +53,7 @@ end
 #
 # OpenStax::RescueFrom.translate_status_codes({
 #   forbidden: "You are not allowed to access this.",
-#   :not_found => "We couldn't find what you asked for.",
+#   not_found: "We couldn't find what you asked for.",
 # })
 #
 # Default:

@@ -1,5 +1,13 @@
-test:
-  adapter: sqlite3
-  database: db/test.sqlite3
+default: &default
+  adapter: postgresql
+  encoding: unicode
   pool: 5
-  timeout: 5000
+  username: <%= ENV['RESCUE_FROM_DB_USER'] %>
+  password: <%= ENV['RESCUE_FROM_DB_PASS'] %>
+  database: <%= ENV['RESCUE_FROM_TEST_DB'] || 'rescue_from_test' %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default

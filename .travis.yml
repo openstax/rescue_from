@@ -1,19 +1,17 @@
+branches:
+  only:
+    - master
 sudo: false
+dist: trusty
 language: ruby
-rvm:
-  - "2.2.3"
+rvm: "2.2.3"
+addons:
+  postgresql: "9.5"
 cache: bundler
 bundler_args: --retry=6
+before_script:
+  - bundle exec rake --trace db:setup
 script:
-  - bundle exec rake
+  - bundle exec rspec --format progress --tag ~type:acceptance
 notifications:
   email: false
-addons:
-   postgresql: "9.5"
-before_install:
-  - gem install bundler
-before_script:
-  - export OXT_DB_USER=postgres
-  - export OXT_DB_PASS=
-  - export OXT_TEST_DB=travis_ci_test
-  - bundle exec rake db:create:all db:migrate
