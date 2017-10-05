@@ -26,6 +26,14 @@ module OpenStax
                                       notify: false,
                                       status: :bad_request)
 
+        RescueFrom.register_exception(ActionController::UnknownHttpMethod,
+                                      notify: false,
+                                      status: :bad_request)
+
+        RescueFrom.register_exception(ActionController::ParameterMissing,
+                                      notify: false,
+                                      status: :bad_request)
+
         RescueFrom.register_exception('SecurityTransgression',
                                       notify: false,
                                       status: :forbidden)
@@ -40,14 +48,6 @@ module OpenStax
         RescueFrom.register_exception('Apipie::ParamMissing',
                                       notify: false,
                                       status: :unprocessable_entity)
-
-        RescueFrom.register_exception(ActionController::UnknownHttpMethod,
-                                      notify: false,
-                                      status: :bad_request)
-
-        RescueFrom.register_exception(ActionController::ParameterMissing,
-                                      notify: false,
-                                      status: :bad_request)
       end
     end
   end

@@ -27,38 +27,67 @@ ActiveJob::Base.use_openstax_exception_rescue
 # URL generation errors are caused by bad routes, for example, and should not be ignored
 ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
 
+# OpenStax::RescueFrom.translate_status_codes(
+#   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request.",
+#   not_found: 'We could not find the requested information.',
+#   bad_request: 'The request was unrecognized.',
+#   forbidden: 'You are not allowed to do that.',
+#   unprocessable_entity: 'Your browser asked for something that we cannot do.'
+# )
+
 # OpenStax::RescueFrom#register_exception default options:
-#
-# { notify: true,
-#   status: :internal_server_error,
-#   extras: ->(exception) { {} } }
+# { notify: true, status: :internal_server_error, extras: ->(exception) { {} } }
 #
 # NOTE: Any unregistered exceptions rescued during run-time
 # will be registered with RescueFrom with the above options
-
-# OpenStax::RescueFrom.register_exception('SecurityTransgression',
-#                                         notify: false,
-#                                         status: :forbidden)
 #
-# OpenStax::RescueFrom.register_exception(ActiveRecord::NotFound,
-#                                         notify: false,
-#                                         status: :not_found)
+# Default exceptions:
 #
-# OpenStax::RescueFrom.register_exception('OAuth2::Error',
-#                                         notify: true,
-#                                         extras: ->(exception) {
-#                                           { headers: exception.response.headers,
-#                                             status: exception.response.status,
-#                                             body: exception.response.body }
+# RescueFrom.register_exception(ActiveRecord::RecordNotFound,
+#                               notify: false,
+#                               status: :not_found)
 #
-# OpenStax::RescueFrom.translate_status_codes({
-#   forbidden: "You are not allowed to access this.",
-#   not_found: "We couldn't find what you asked for.",
-# })
+# RescueFrom.register_exception(ActionController::RoutingError,
+#                               notify: false,
+#                               status: :not_found)
 #
-# Default:
-#   - internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request."
-#   - not_found: 'We could not find the requested information.',
-#   - bad_request: 'The request was unrecognized.',
-#   - forbidden: 'You are not allowed to do that.'
-#   - unprocessable_entity: 'Your browser asked for something that we cannot do.'
+# RescueFrom.register_exception(ActionController::UnknownController,
+#                               notify: false,
+#                               status: :not_found)
+#
+# RescueFrom.register_exception(ActionController::InvalidAuthenticityToken,
+#                               notify: false,
+#                               status: :unprocessable_entity)
+#
+# RescueFrom.register_exception(AbstractController::ActionNotFound,
+#                               notify: false,
+#                               status: :not_found)
+#
+# RescueFrom.register_exception(ActionView::MissingTemplate,
+#                               notify: false,
+#                               status: :bad_request)
+#
+# RescueFrom.register_exception(ActionController::UnknownHttpMethod,
+#                               notify: false,
+#                               status: :bad_request)
+#
+# RescueFrom.register_exception(ActionController::ParameterMissing,
+#                               notify: false,
+#                               status: :bad_request)
+#
+# RescueFrom.register_exception('SecurityTransgression',
+#                               notify: false,
+#                               status: :forbidden)
+#
+# RescueFrom.register_exception('OAuth2::Error',
+#                               extras: ->(ex) {
+#                                 {
+#                                   headers: ex.response.headers,
+#                                   status: ex.response.status,
+#                                   body: ex.response.body
+#                                 }
+#                               })
+#
+# RescueFrom.register_exception('Apipie::ParamMissing',
+#                               notify: false,
+#                               status: :unprocessable_entity)
