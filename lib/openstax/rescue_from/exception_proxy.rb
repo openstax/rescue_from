@@ -28,11 +28,7 @@ module OpenStax
       end
 
       def cause
-        @cause ||= if exception.respond_to?(:cause) && exception.cause
-                     ExceptionCauseProxy.new(exception.cause)
-                   else
-                     nil
-                   end
+        @cause ||= exception.cause if exception.respond_to?(:cause)
       end
 
       def logger_backtrace
