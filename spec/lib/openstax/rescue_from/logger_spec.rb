@@ -24,8 +24,10 @@ module OpenStax
 
             allow(described_class).to receive(:new) { logger }
             expect(logger).to receive(:record_system_error!).with(no_args).once.and_call_original
-            expect(logger).to receive(:record_system_error_recursively!).once.and_call_original
-            expect(logger).to receive(:record_system_error!).with("Exception cause").once
+            expect(logger).to receive(:record_system_error_recursively!).twice.and_call_original
+            expect(logger).to(
+              receive(:record_system_error!).with("Exception cause").once.and_call_original
+            )
 
             RescueFrom.perform_rescue(exception)
           end
