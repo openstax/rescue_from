@@ -4,9 +4,9 @@ module OpenStax
   module RescueFrom
     class Configuration
 
-      attr_accessor :raise_exceptions, :notifier, :html_error_template_path,
-        :html_error_template_layout_name, :app_name, :app_env,
-        :email_prefix, :sender_address, :exception_recipients
+      attr_accessor :raise_exceptions, :raise_background_exceptions, :notifier,
+        :html_error_template_path, :html_error_template_layout_name, :app_name,
+        :app_env, :email_prefix, :sender_address, :exception_recipients
 
       attr_writer :contact_name
 
@@ -16,6 +16,9 @@ module OpenStax
 
       def initialize
         @raise_exceptions = ![false, 'false'].include?(ENV['RAISE_EXCEPTIONS'])
+        @raise_background_exceptions = ![false, 'false'].include?(
+          ENV['RAISE_BACKGROUND_EXCEPTIONS']
+        )
 
         @app_name = ENV['APP_NAME']
         @app_env = ENV['APP_ENV']

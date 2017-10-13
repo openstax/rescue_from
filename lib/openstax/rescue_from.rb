@@ -15,21 +15,25 @@ module OpenStax
         finish_exception_rescue(proxy, listener)
       end
 
-      def perform_background_rescue(exception)
+      def perform_background_rescue(exception, listener = MuteListener.new)
         proxy = ExceptionProxy.new(exception)
         register_unrecognized_exception(proxy.name)
         log_background_system_error(proxy)
         send_notifying_background_exceptions(proxy)
-        finish_background_exception_rescue(proxy)
+        finish_background_exception_rescue(proxy, listener)
       end
 
+      # Not threadsafe
       def do_not_reraise
         original = configuration.raise_exceptions
+        original_background = configuration.raise_background_exceptions
         begin
           configuration.raise_exceptions = false
+          configuration.raise_background_exceptions = false
           yield
         ensure
           configuration.raise_exceptions = original
+          configuration.raise_background_exceptions = original_background
         end
       end
 
@@ -46,12 +50,12 @@ module OpenStax
         end
       end
 
-      # For rescuing from specific blocks of code: OpenStax::RescueFrom.this{...}
-      def this
+      # For rescuing from specific blocks of code: OpenStax::RescueFrom.this {...}
+      def this(background = true)
         begin
           yield
-        rescue Exception => e
-          perform_rescue(e)
+        rescue Exception => ex
+          background ? perform_background_rescue(ex) : perform_rescue(ex)
         end
       end
 
@@ -190,8 +194,12 @@ module OpenStax
         end
       end
 
-      def finish_background_exception_rescue(proxy)
-        raise proxy.exception
+      def finish_background_exception_rescue(proxy, listener)
+        if configuration.raise_background_exceptions
+          raise proxy.exception
+        else
+          listener.openstax_exception_rescued(proxy, notifies_for?(proxy.name))
+        end
       end
     end
   end

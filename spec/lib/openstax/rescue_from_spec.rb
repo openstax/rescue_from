@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe OpenStax::RescueFrom do
+  let(:exception) { StandardError.new }
+
   it 'pre-registers a handful of exceptions' do
     exceptions = OpenStax::RescueFrom.registered_exceptions
 
@@ -65,25 +67,52 @@ RSpec.describe OpenStax::RescueFrom do
     expect(parameter_missing.extras.call(nil)).to eq({})
   end
 
-  it 'rescues from specific blocks of code' do
-    an_exception = StandardError.new
-    expect(OpenStax::RescueFrom).to receive(:perform_rescue).with(an_exception)
-    OpenStax::RescueFrom.this{ raise an_exception }
+  context 'background (default)' do
+    it 'can rescue from specific blocks of code' do
+      expect(OpenStax::RescueFrom).to receive(:perform_background_rescue).with(exception)
+      OpenStax::RescueFrom.this { raise exception }
+    end
+
+    context '#do_not_reraise' do
+      it 'turns off reraising' do
+        original = OpenStax::RescueFrom.configuration.raise_background_exceptions
+        OpenStax::RescueFrom.configuration.raise_background_exceptions = true
+
+        begin
+          expect do
+            OpenStax::RescueFrom.do_not_reraise do
+              OpenStax::RescueFrom.this { raise exception }
+            end
+          end.not_to raise_error
+        ensure
+          OpenStax::RescueFrom.configuration.raise_background_exceptions = original
+        end
+      end
+    end
   end
 
-  context '#do_not_reraise' do
-    it 'turns off reraising' do
-      original = OpenStax::RescueFrom.configuration.raise_exceptions
-      OpenStax::RescueFrom.configuration.raise_exceptions = true
+  context 'foreground' do
+    let(:background) { false }
 
-      begin
-        expect{
-          OpenStax::RescueFrom.do_not_reraise {
-            OpenStax::RescueFrom.this{ raise StandardError }
-          }
-        }.not_to raise_error
-      ensure
-        OpenStax::RescueFrom.configuration.raise_exceptions = original
+    it 'can rescue from specific blocks of code in foreground mode' do
+      expect(OpenStax::RescueFrom).to receive(:perform_rescue).with(exception)
+      OpenStax::RescueFrom.this(background) { raise exception }
+    end
+
+    context '#do_not_reraise' do
+      it 'turns off reraising' do
+        original = OpenStax::RescueFrom.configuration.raise_exceptions
+        OpenStax::RescueFrom.configuration.raise_exceptions = true
+
+        begin
+          expect do
+            OpenStax::RescueFrom.do_not_reraise do
+              OpenStax::RescueFrom.this(background) { raise exception }
+            end
+          end.not_to raise_error
+        ensure
+          OpenStax::RescueFrom.configuration.raise_exceptions = original
+        end
       end
     end
   end
