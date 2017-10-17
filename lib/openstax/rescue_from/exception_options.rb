@@ -19,7 +19,7 @@ module OpenStax
       end
 
       def notify?
-        @notify
+        @notify.respond_to?(:call) ? @notify.call : !!@notify
       end
     end
   end
