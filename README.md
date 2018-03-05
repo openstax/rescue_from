@@ -90,10 +90,19 @@ OpenStax::RescueFrom.configure do |config|
 
   config.app_name = ENV['APP_NAME']
   config.app_env = ENV['APP_ENV']
+  # Can be a name, or a web/email address. See 'View helper' below
   config.contact_name = ENV['EXCEPTION_CONTACT_NAME']
-    # can be a name, or a web/email address. See 'View helper' below
 
-  config.notifier = ExceptionNotifier
+  # To use ExceptionNotifier, after adding `gem 'exception_notification'` to your Gemfile:
+  # config.notifier = ExceptionNotifier
+  # config.notify_method = :notify_exception
+  # URL generation errors are caused by bad routes, for example, and should not be ignored
+  # ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
+
+  # To use Raven (Sentry), after adding `gem 'sentry-raven', require: 'raven/base'`
+  # to your Gemfile:
+  # config.notifier = Raven
+  # config.notify_method = :capture_type
 
   config.html_error_template_path = 'errors/any'
   config.html_error_template_layout_name = 'application'

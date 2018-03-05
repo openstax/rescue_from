@@ -150,40 +150,44 @@ module OpenStax
         logger.record_system_error!('A background job exception occurred')
       end
 
-      def send_notifying_exceptions(proxy, listener)
-        if notifies_for?(proxy.name)
-          configuration.notifier.notify_exception(
-            proxy.exception,
-            env: listener.request.env,
-            data: {
-              error_id: proxy.error_id,
-              class: proxy.name,
-              message: proxy.message,
-              first_line_of_backtrace: proxy.first_backtrace_line,
-              cause: proxy.cause,
-              dns_name: resolve_ip(listener.request.remote_ip),
-              extras: proxy.extras
-            },
-            sections: %w(data request session environment backtrace)
-          )
-        end
+      def send_notifying_exceptions(proxy, controller)
+        return if configuration.notifier.blank? || configuration.notify_method.blank? ||
+                  !configuration.notify_exceptions || !notifies_for?(proxy.name)
+
+        configuration.notifier.public_send(
+          configuration.notify_method,
+          proxy.exception,
+          env: controller.request.env,
+          data: {
+            error_id: proxy.error_id,
+            class: proxy.name,
+            message: proxy.message,
+            first_line_of_backtrace: proxy.first_backtrace_line,
+            cause: proxy.cause,
+            dns_name: resolve_ip(controller.request.remote_ip),
+            extras: proxy.extras
+          },
+          sections: %w(data request session environment backtrace)
+        )
       end
 
       def send_notifying_background_exceptions(proxy)
-        if notifies_for?(proxy.name)
-          configuration.notifier.notify_exception(
-            proxy.exception,
-            data: {
-              error_id: proxy.error_id,
-              class: proxy.name,
-              message: proxy.message,
-              first_line_of_backtrace: proxy.first_backtrace_line,
-              cause: proxy.cause,
-              extras: proxy.extras
-            },
-            sections: %w(data environment backtrace)
-          )
-        end
+        return if configuration.notifier.blank? || configuration.notify_method.blank? ||
+                  !configuration.notify_background_exceptions || !notifies_for?(proxy.name)
+
+        configuration.notifier.public_send(
+          configuration.notify_method,
+          proxy.exception,
+          data: {
+            error_id: proxy.error_id,
+            class: proxy.name,
+            message: proxy.message,
+            first_line_of_backtrace: proxy.first_backtrace_line,
+            cause: proxy.cause,
+            extras: proxy.extras
+          },
+          sections: %w(data environment backtrace)
+        )
       end
 
       def finish_exception_rescue(proxy, listener)

@@ -5,6 +5,7 @@ module OpenStax
     class Configuration
 
       attr_accessor :raise_exceptions, :raise_background_exceptions, :notifier,
+        :notify_method, :notify_exceptions, :notify_background_exceptions,
         :html_error_template_path, :html_error_template_layout_name, :app_name,
         :app_env, :email_prefix, :sender_address, :exception_recipients
 
@@ -24,7 +25,8 @@ module OpenStax
         @app_env = ENV['APP_ENV']
         @contact_name = ENV['EXCEPTION_CONTACT_NAME']
 
-        @notifier = ExceptionNotifier
+        @notify_exceptions = true
+        @notify_background_exceptions = true
 
         @html_error_template_path = 'errors/any'
         @html_error_template_layout_name = 'application'

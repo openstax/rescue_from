@@ -11,7 +11,15 @@ OpenStax::RescueFrom.configure do |config|
   # config.app_env = ENV['APP_ENV']
   # config.contact_name = ENV['EXCEPTION_CONTACT_NAME']
 
+  # To use ExceptionNotifier, after adding `gem 'exception_notification'` to your Gemfile:
   # config.notifier = ExceptionNotifier
+  # config.notify_method = :notify_exception
+  # URL generation errors are caused by bad routes, for example, and should not be ignored
+  # ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
+
+  # To use Raven (Sentry), after adding `gem 'sentry-raven', require: 'raven/base'` to your Gemfile:
+  # config.notifier = Raven
+  # config.notify_method = :capture_type
 
   # config.html_error_template_path = 'errors/any'
   # config.html_error_template_layout_name = 'application'
@@ -26,9 +34,6 @@ ActionController::Base.use_openstax_exception_rescue
 
 # RescueFrom always reraises background exceptions so that the background job may properly fail
 ActiveJob::Base.use_openstax_exception_rescue
-
-# URL generation errors are caused by bad routes, for example, and should not be ignored
-ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
 
 # OpenStax::RescueFrom.translate_status_codes(
 #   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request.",
