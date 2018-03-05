@@ -9,12 +9,16 @@ module OpenStax
         end
       end
 
-      initializer "openstax.rescue_from.use_exception_notification_middleware" do
-        Rails.application.config.middleware.use ExceptionNotification::Rack, email: {
-          email_prefix: RescueFrom.configuration.email_prefix,
-          sender_address: RescueFrom.configuration.sender_address,
-          exception_recipients: RescueFrom.configuration.exception_recipients
-        }
+      initializer "openstax.rescue_from.use_rack_middleware" do
+        middleware = OpenStax::RescueFrom.configuration.notify_rack_middleware
+        next if middleware.blank?
+
+        options = OpenStax::RescueFrom.configuration.notify_rack_middleware_options
+        if options.nil?
+          Rails.application.config.middleware.insert 0, middleware
+        else
+          Rails.application.config.middleware.insert 0, middleware, options
+        end
       end
 
       initializer "openstax.rescue_from.pre_register_exceptions" do

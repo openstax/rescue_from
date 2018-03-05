@@ -4,10 +4,11 @@ module OpenStax
   module RescueFrom
     class Configuration
 
-      attr_accessor :raise_exceptions, :raise_background_exceptions, :notifier,
-        :notify_method, :notify_exceptions, :notify_background_exceptions,
-        :html_error_template_path, :html_error_template_layout_name, :app_name,
-        :app_env, :email_prefix, :sender_address, :exception_recipients
+      attr_accessor :raise_exceptions, :raise_background_exceptions, :notify_exceptions,
+        :notify_proc, :notify_background_exceptions, :notify_background_proc,
+        :notify_rack_middleware, :notify_rack_middleware_options,
+        :html_error_template_path, :html_error_template_layout_name, :app_name, :app_env,
+        :email_prefix, :sender_address, :exception_recipients
 
       attr_writer :contact_name
 
@@ -26,7 +27,9 @@ module OpenStax
         @contact_name = ENV['EXCEPTION_CONTACT_NAME']
 
         @notify_exceptions = true
+        @notify_proc = ->(proxy, controller) {}
         @notify_background_exceptions = true
+        @notify_background_proc = ->(proxy) {}
 
         @html_error_template_path = 'errors/any'
         @html_error_template_layout_name = 'application'

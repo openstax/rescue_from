@@ -93,16 +93,77 @@ OpenStax::RescueFrom.configure do |config|
   # Can be a name, or a web/email address. See 'View helper' below
   config.contact_name = ENV['EXCEPTION_CONTACT_NAME']
 
-  # To use ExceptionNotifier, after adding `gem 'exception_notification'` to your Gemfile:
-  # config.notifier = ExceptionNotifier
-  # config.notify_method = :notify_exception
+  # To use ExceptionNotifier add `gem 'exception_notification'` to your Gemfile and then:
+  # config.notify_proc = ->(proxy, controller) do
+  #   ExceptionNotifier.notify_exception(
+  #     proxy.exception,
+  #     env: controller.request.env,
+  #     data: {
+  #       error_id: proxy.error_id,
+  #       class: proxy.name,
+  #       message: proxy.message,
+  #       first_line_of_backtrace: proxy.first_backtrace_line,
+  #       cause: proxy.cause,
+  #       dns_name: resolve_ip(controller.request.remote_ip),
+  #       extras: proxy.extras
+  #     },
+  #     sections: %w(data request session environment backtrace)
+  #   )
+  # end
+  # config.notify_background_proc = ->(proxy) do
+  #   ExceptionNotifier.notify_exception(
+  #     proxy.exception,
+  #     data: {
+  #       error_id: proxy.error_id,
+  #       class: proxy.name,
+  #       message: proxy.message,
+  #       first_line_of_backtrace: proxy.first_backtrace_line,
+  #       cause: proxy.cause,
+  #       extras: proxy.extras
+  #     },
+  #     sections: %w(data environment backtrace)
+  #   )
+  # end
+  # config.notify_rack_middleware = ExceptionNotification::Rack,
+  # config.notify_rack_middleware_options = {
+  #   email: {
+  #     email_prefix: RescueFrom.configuration.email_prefix,
+  #     sender_address: RescueFrom.configuration.sender_address,
+  #     exception_recipients: RescueFrom.configuration.exception_recipients
+  #   }
+  # }
   # URL generation errors are caused by bad routes, for example, and should not be ignored
   # ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
 
-  # To use Raven (Sentry), after adding `gem 'sentry-raven', require: 'raven/base'`
-  # to your Gemfile:
-  # config.notifier = Raven
-  # config.notify_method = :capture_type
+  # To use Raven (Sentry) add `gem 'sentry-raven', require: 'raven/base'` to your Gemfile and then:
+  # config.notify_proc = -> do |proxy, controller|
+  #   extra = {
+  #     env: controller.request.env,
+  #     error_id: proxy.error_id,
+  #     class: proxy.name,
+  #     message: proxy.message,
+  #     first_line_of_backtrace: proxy.first_backtrace_line,
+  #     cause: proxy.cause,
+  #     dns_name: resolve_ip(controller.request.remote_ip)
+  #   }
+  #   extra.merge!(proxy.extras) if proxy.extras.is_a? Hash
+  #
+  #   Raven.capture_exception(proxy.exception, extra: extra)
+  # end
+  # config.notify_background_proc = -> do |proxy|
+  #   extra = {
+  #     error_id: proxy.error_id,
+  #     class: proxy.name,
+  #     message: proxy.message,
+  #     first_line_of_backtrace: proxy.first_backtrace_line,
+  #     cause: proxy.cause
+  #   }
+  #   extra.merge!(proxy.extras) if proxy.extras.is_a? Hash
+  #
+  #   Raven.capture_exception(proxy.exception, extra: extra)
+  # end
+  # require 'raven/integrations/rack'
+  # config.notify_rack_middleware = Raven::Rack
 
   config.html_error_template_path = 'errors/any'
   config.html_error_template_layout_name = 'application'
