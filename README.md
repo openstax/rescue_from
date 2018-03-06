@@ -89,7 +89,6 @@ OpenStax::RescueFrom.configure do |config|
                               Rails.application.config.consider_all_requests_local
 
   config.app_name = ENV['APP_NAME']
-  config.app_env = ENV['APP_ENV']
   # Can be a name, or a web/email address. See 'View helper' below
   config.contact_name = ENV['EXCEPTION_CONTACT_NAME']
 
@@ -124,12 +123,12 @@ OpenStax::RescueFrom.configure do |config|
   #     sections: %w(data environment backtrace)
   #   )
   # end
-  # config.notify_rack_middleware = ExceptionNotification::Rack,
+  # config.notify_rack_middleware = ExceptionNotification::Rack
   # config.notify_rack_middleware_options = {
   #   email: {
-  #     email_prefix: RescueFrom.configuration.email_prefix,
-  #     sender_address: RescueFrom.configuration.sender_address,
-  #     exception_recipients: RescueFrom.configuration.exception_recipients
+  #     email_prefix: "[#{config.app_name}] (#{ENV['APP_ENV']}) ",
+  #     sender_address: ENV['EXCEPTION_SENDER'],
+  #     exception_recipients: ENV['EXCEPTION_RECIPIENTS']
   #   }
   # }
   # URL generation errors are caused by bad routes, for example, and should not be ignored
@@ -166,10 +165,6 @@ OpenStax::RescueFrom.configure do |config|
 
   config.html_error_template_path = 'errors/any'
   config.html_error_template_layout_name = 'application'
-
-  config.email_prefix = "[#{app_name}] (#{app_env}) "
-  config.sender_address = ENV['EXCEPTION_SENDER']
-  config.exception_recipients = ENV['EXCEPTION_RECIPIENTS']
 end
 
 # Exceptions in controllers might be reraised or not depending on the settings above
@@ -177,9 +172,6 @@ ActionController::Base.use_openstax_exception_rescue
 
 # RescueFrom always reraises background exceptions so that the background job may properly fail
 ActiveJob::Base.use_openstax_exception_rescue
-
-# URL generation errors are caused by bad routes, for example, and should not be ignored
-ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
 ```
 
 ## Controller hook

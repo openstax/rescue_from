@@ -15,9 +15,9 @@ module OpenStax
 
         options = OpenStax::RescueFrom.configuration.notify_rack_middleware_options
         if options.nil?
-          Rails.application.config.middleware.insert 0, middleware
+          Rails.application.config.middleware.insert_before 0, middleware
         else
-          Rails.application.config.middleware.insert 0, middleware, options
+          Rails.application.config.middleware.insert_before 0, middleware, options
         end
       end
 
