@@ -56,7 +56,6 @@ OpenStax::RescueFrom.configure do |config|
   # To use Raven (Sentry) add `gem 'sentry-raven', require: 'raven/base'` to your Gemfile and then:
   # config.notify_proc = -> do |proxy, controller|
   #   extra = {
-  #     env: controller.request.env,
   #     error_id: proxy.error_id,
   #     class: proxy.name,
   #     message: proxy.message,
