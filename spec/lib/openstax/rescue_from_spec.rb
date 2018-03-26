@@ -6,6 +6,11 @@ RSpec.describe OpenStax::RescueFrom do
   it 'pre-registers a handful of exceptions' do
     exceptions = OpenStax::RescueFrom.registered_exceptions
 
+    active_record_not_found = exceptions['SystemExit']
+    expect(active_record_not_found).not_to be_notify
+    expect(active_record_not_found.status_code).to be(:service_unavailable)
+    expect(active_record_not_found.extras.call(nil)).to eq({})
+
     active_record_not_found = exceptions['ActiveRecord::RecordNotFound']
     expect(active_record_not_found).not_to be_notify
     expect(active_record_not_found.status_code).to be(:not_found)

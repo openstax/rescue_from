@@ -2,6 +2,10 @@ module OpenStax
   module RescueFrom
     class DefaultExceptions
       def self.pre_register!
+        RescueFrom.register_exception(SystemExit,
+                                      notify: false,
+                                      status: :service_unavailable)
+
         RescueFrom.register_exception(ActiveRecord::RecordNotFound,
                                       notify: false,
                                       status: :not_found)
