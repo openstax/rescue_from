@@ -8,17 +8,81 @@ OpenStax::RescueFrom.configure do |config|
   )
 
   # config.app_name = ENV['APP_NAME']
-  # config.app_env = ENV['APP_ENV']
   # config.contact_name = ENV['EXCEPTION_CONTACT_NAME']
 
-  # config.notifier = ExceptionNotifier
+  # To use ExceptionNotifier add `gem 'exception_notification'` to your Gemfile and then:
+  # config.notify_proc = ->(proxy, controller) do
+  #   ExceptionNotifier.notify_exception(
+  #     proxy.exception,
+  #     env: controller.request.env,
+  #     data: {
+  #       error_id: proxy.error_id,
+  #       class: proxy.name,
+  #       message: proxy.message,
+  #       first_line_of_backtrace: proxy.first_backtrace_line,
+  #       cause: proxy.cause,
+  #       dns_name: resolve_ip(controller.request.remote_ip),
+  #       extras: proxy.extras
+  #     },
+  #     sections: %w(data request session environment backtrace)
+  #   )
+  # end
+  # config.notify_background_proc = ->(proxy) do
+  #   ExceptionNotifier.notify_exception(
+  #     proxy.exception,
+  #     data: {
+  #       error_id: proxy.error_id,
+  #       class: proxy.name,
+  #       message: proxy.message,
+  #       first_line_of_backtrace: proxy.first_backtrace_line,
+  #       cause: proxy.cause,
+  #       extras: proxy.extras
+  #     },
+  #     sections: %w(data environment backtrace)
+  #   )
+  # end
+  # config.notify_rack_middleware = ExceptionNotification::Rack
+  # config.notify_rack_middleware_options = {
+  #   email: {
+  #     email_prefix: "[#{config.app_name}] (#{ENV['APP_ENV']}) ",
+  #     sender_address: ENV['EXCEPTION_SENDER'],
+  #     exception_recipients: ENV['EXCEPTION_RECIPIENTS']
+  #   }
+  # }
+  # URL generation errors are caused by bad routes, for example, and should not be ignored
+  # ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
+
+  # To use Raven (Sentry) add `gem 'sentry-raven', require: 'raven/base'` to your Gemfile and then:
+  # config.notify_proc = -> do |proxy, controller|
+  #   extra = {
+  #     error_id: proxy.error_id,
+  #     class: proxy.name,
+  #     message: proxy.message,
+  #     first_line_of_backtrace: proxy.first_backtrace_line,
+  #     cause: proxy.cause,
+  #     dns_name: resolve_ip(controller.request.remote_ip)
+  #   }
+  #   extra.merge!(proxy.extras) if proxy.extras.is_a? Hash
+  #
+  #   Raven.capture_exception(proxy.exception, extra: extra)
+  # end
+  # config.notify_background_proc = -> do |proxy|
+  #   extra = {
+  #     error_id: proxy.error_id,
+  #     class: proxy.name,
+  #     message: proxy.message,
+  #     first_line_of_backtrace: proxy.first_backtrace_line,
+  #     cause: proxy.cause
+  #   }
+  #   extra.merge!(proxy.extras) if proxy.extras.is_a? Hash
+  #
+  #   Raven.capture_exception(proxy.exception, extra: extra)
+  # end
+  # require 'raven/integrations/rack'
+  # config.notify_rack_middleware = Raven::Rack
 
   # config.html_error_template_path = 'errors/any'
   # config.html_error_template_layout_name = 'application'
-
-  # config.email_prefix = "[#{app_name}] (#{app_env}) "
-  # config.sender_address = ENV['EXCEPTION_SENDER']
-  # config.exception_recipients = ENV['EXCEPTION_RECIPIENTS']
 end
 
 # Exceptions in controllers might be reraised or not depending on the settings above
@@ -26,9 +90,6 @@ ActionController::Base.use_openstax_exception_rescue
 
 # RescueFrom always reraises background exceptions so that the background job may properly fail
 ActiveJob::Base.use_openstax_exception_rescue
-
-# URL generation errors are caused by bad routes, for example, and should not be ignored
-ExceptionNotifier.ignored_exceptions.delete("ActionController::UrlGenerationError")
 
 # OpenStax::RescueFrom.translate_status_codes(
 #   internal_server_error: "Sorry, #{OpenStax::RescueFrom.configuration.app_name} had some unexpected trouble with your request.",
