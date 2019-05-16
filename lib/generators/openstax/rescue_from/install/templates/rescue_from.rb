@@ -115,10 +115,6 @@ ActiveJob::Base.use_openstax_exception_rescue
 #                               notify: false,
 #                               status: :not_found)
 #
-# RescueFrom.register_exception(ActionController::UnknownController,
-#                               notify: false,
-#                               status: :not_found)
-#
 # RescueFrom.register_exception(ActionController::InvalidAuthenticityToken,
 #                               notify: false,
 #                               status: :unprocessable_entity)

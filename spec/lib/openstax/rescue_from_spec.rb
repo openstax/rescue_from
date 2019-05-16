@@ -16,11 +16,6 @@ RSpec.describe OpenStax::RescueFrom do
     expect(action_controller_routing.status_code).to be(:not_found)
     expect(action_controller_routing.extras.call(nil)).to eq({})
 
-    action_controller_unknown = exceptions['ActionController::UnknownController']
-    expect(action_controller_unknown).not_to be_notify
-    expect(action_controller_unknown.status_code).to be(:not_found)
-    expect(action_controller_unknown.extras.call(nil)).to eq({})
-
     controller_invalid_token = exceptions['ActionController::InvalidAuthenticityToken']
     expect(controller_invalid_token).not_to be_notify
     expect(controller_invalid_token.status_code).to be(:unprocessable_entity)
