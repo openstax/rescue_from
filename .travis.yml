@@ -4,9 +4,9 @@ branches:
 sudo: false
 dist: trusty
 language: ruby
-rvm: "2.2.3"
+rvm: 2.6.1
 addons:
-  postgresql: "9.5"
+  postgresql: 9.6
 cache: bundler
 bundler_args: --retry=6
 before_script:
