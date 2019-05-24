@@ -10,10 +10,6 @@ module OpenStax
                                       notify: false,
                                       status: :not_found)
 
-        RescueFrom.register_exception(ActionController::UnknownController,
-                                      notify: false,
-                                      status: :not_found)
-
         RescueFrom.register_exception(ActionController::InvalidAuthenticityToken,
                                       notify: false,
                                       status: :unprocessable_entity)
