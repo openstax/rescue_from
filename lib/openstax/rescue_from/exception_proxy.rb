@@ -32,11 +32,11 @@ module OpenStax
       end
 
       def logger_backtrace
-        @backtrace ||= exception.backtrace.join("\n")
+        @backtrace ||= exception.backtrace&.join("\n")
       end
 
       def first_backtrace_line
-        @first_backtrace_line ||= exception.backtrace.first
+        @first_backtrace_line ||= exception.backtrace&.first
       end
 
       def status
