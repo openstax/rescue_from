@@ -1,9 +1,4 @@
 name: Tests
-env:
-  OX_AR_DB_USER: postgres
-  OX_AR_DB_PASS: postgres
-  RAILS_ENV: test
-
 on:
   pull_request:
   push:
@@ -13,16 +8,6 @@ jobs:
   tests:
     timeout-minutes: 30
     runs-on: ubuntu-18.04
-    services:
-      postgres:
-        image: postgres:11
-        ports:
-        - 5432:5432
-        options: >-
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        env:
-          POSTGRES_USER: ${{ env.OX_AR_DB_USER }}
-          POSTGRES_PASSWORD: ${{ env.OX_AR_DB_PASS }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-ruby@v1
@@ -35,8 +20,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gems-
       - name: Setup
-        run: |
-          bundle install
-          bundle exec rake --trace db:create db:schema:load db:seed
+        run: bundle install
       - name: Test
         run: bundle exec rake spec
