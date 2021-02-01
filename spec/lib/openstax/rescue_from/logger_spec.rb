@@ -21,6 +21,7 @@ module OpenStax
             expect(exception.cause).to eq cause
 
             logger = described_class.new(ExceptionProxy.new(exception))
+            logger.logger.level = ::Logger::FATAL
 
             allow(described_class).to receive(:new) { logger }
             expect(logger).to receive(:record_system_error!).with(no_args).once.and_call_original
