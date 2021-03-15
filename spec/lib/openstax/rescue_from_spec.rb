@@ -68,6 +68,28 @@ RSpec.describe OpenStax::RescueFrom do
       OpenStax::RescueFrom.this { raise exception }
     end
 
+    context '#log_background_system_error' do
+      it 'logs notifying exceptions' do
+        proxy = OpenStax::RescueFrom::ExceptionProxy.new(StandardError.new 'test')
+        OpenStax::RescueFrom.register_unrecognized_exception proxy.name
+
+        expect(OpenStax::RescueFrom::Logger).to receive(:new).and_call_original
+        expect_any_instance_of(OpenStax::RescueFrom::Logger).to(
+          receive(:record_system_error!).with('A background job exception occurred')
+        )
+
+        described_class.send :log_background_system_error, proxy
+      end
+
+      it 'does not log non-notifying exceptions' do
+        proxy = OpenStax::RescueFrom::ExceptionProxy.new(ActiveRecord::RecordNotFound.new 'test')
+        OpenStax::RescueFrom.register_unrecognized_exception proxy.name
+
+        expect(OpenStax::RescueFrom::Logger).not_to receive(:new)
+        described_class.send :log_background_system_error, proxy
+      end
+    end
+
     context '#do_not_reraise' do
       it 'turns off reraising' do
         original = OpenStax::RescueFrom.configuration.raise_background_exceptions
@@ -92,6 +114,26 @@ RSpec.describe OpenStax::RescueFrom do
     it 'can rescue from specific blocks of code in foreground mode' do
       expect(OpenStax::RescueFrom).to receive(:perform_rescue).with(exception)
       OpenStax::RescueFrom.this(background) { raise exception }
+    end
+
+    context '#log_system_error' do
+      it 'logs notifying exceptions' do
+        proxy = OpenStax::RescueFrom::ExceptionProxy.new(StandardError.new 'test')
+        OpenStax::RescueFrom.register_unrecognized_exception proxy.name
+
+        expect(OpenStax::RescueFrom::Logger).to receive(:new).and_call_original
+        expect_any_instance_of(OpenStax::RescueFrom::Logger).to receive(:record_system_error!)
+
+        described_class.send :log_system_error, proxy
+      end
+
+      it 'does not log non-notifying exceptions' do
+        proxy = OpenStax::RescueFrom::ExceptionProxy.new(ActiveRecord::RecordNotFound.new 'test')
+        OpenStax::RescueFrom.register_unrecognized_exception proxy.name
+
+        expect(OpenStax::RescueFrom::Logger).not_to receive(:new)
+        described_class.send :log_system_error, proxy
+      end
     end
 
     context '#do_not_reraise' do

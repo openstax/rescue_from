@@ -139,13 +139,15 @@ module OpenStax
       end
 
       def log_system_error(proxy)
-        if notifies_for?(proxy.name)
-          logger = Logger.new(proxy)
-          logger.record_system_error!
-        end
+        return unless notifies_for?(proxy.name)
+
+        logger = Logger.new(proxy)
+        logger.record_system_error!
       end
 
       def log_background_system_error(proxy)
+        return unless notifies_for?(proxy.name)
+
         logger = Logger.new(proxy)
         logger.record_system_error!('A background job exception occurred')
       end
