@@ -17,4 +17,6 @@ module OpenStax
   end
 end
 
-ActionView::Base.send :include, OpenStax::RescueFrom::ViewHelpers
+ActiveSupport.on_load(:action_view) do
+  ActionView::Base.send :include, OpenStax::RescueFrom::ViewHelpers
+end

@@ -40,4 +40,6 @@ module OpenStax
   end
 end
 
-ActionController::Base.send :include, OpenStax::RescueFrom::Controller
+ActiveSupport.on_load(:action_controller_base) do
+  ActionController::Base.send :include, OpenStax::RescueFrom::Controller
+end

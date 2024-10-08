@@ -16,4 +16,6 @@ module OpenStax
   end
 end
 
-ActiveJob::Base.send :include, OpenStax::RescueFrom::BackgroundJob
+ActiveSupport.on_load(:active_job) do
+  ActiveJob::Base.send :include, OpenStax::RescueFrom::BackgroundJob
+end
