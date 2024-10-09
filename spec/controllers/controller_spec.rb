@@ -101,7 +101,7 @@ module Test
       expect(mail.from).to eq(['donotreply@dummyapp.com'])
       expect(mail.to).to eq(['notify@dummyapp.com'])
       expect(mail.subject).to eq(
-        '[RescueFrom Dummy App] (DUM) test bad_action (ArgumentError) "ArgumentError"'
+        '[RescueFrom Dummy App] (DUM) test#bad_action (ArgumentError) "ArgumentError"'
       )
     end
 
