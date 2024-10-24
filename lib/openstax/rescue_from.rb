@@ -76,7 +76,7 @@ module OpenStax
       end
 
       def notifies_for?(exception_name)
-        notifying_exceptions.include?(exception_name)
+        options_for(exception_name).notify?
       end
 
       def status(exception_name)

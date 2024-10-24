@@ -71,7 +71,6 @@ RSpec.describe OpenStax::RescueFrom do
     context '#log_background_system_error' do
       it 'logs notifying exceptions' do
         proxy = OpenStax::RescueFrom::ExceptionProxy.new(StandardError.new 'test')
-        OpenStax::RescueFrom.register_unrecognized_exception proxy.name
 
         expect(OpenStax::RescueFrom::Logger).to receive(:new).and_call_original
         expect_any_instance_of(OpenStax::RescueFrom::Logger).to(
@@ -82,8 +81,8 @@ RSpec.describe OpenStax::RescueFrom do
       end
 
       it 'does not log non-notifying exceptions' do
-        proxy = OpenStax::RescueFrom::ExceptionProxy.new(ActiveRecord::RecordNotFound.new 'test')
-        OpenStax::RescueFrom.register_unrecognized_exception proxy.name
+        proxy = OpenStax::RescueFrom::ExceptionProxy.new(ActiveRecord::RecordNotFound.new 'test', notify: false)
+        OpenStax::RescueFrom.register_exception proxy.name
 
         expect(OpenStax::RescueFrom::Logger).not_to receive(:new)
         described_class.send :log_background_system_error, proxy
@@ -119,7 +118,7 @@ RSpec.describe OpenStax::RescueFrom do
     context '#log_system_error' do
       it 'logs notifying exceptions' do
         proxy = OpenStax::RescueFrom::ExceptionProxy.new(StandardError.new 'test')
-        OpenStax::RescueFrom.register_unrecognized_exception proxy.name
+        OpenStax::RescueFrom.register_exception proxy.name
 
         expect(OpenStax::RescueFrom::Logger).to receive(:new).and_call_original
         expect_any_instance_of(OpenStax::RescueFrom::Logger).to receive(:record_system_error!)
@@ -128,8 +127,8 @@ RSpec.describe OpenStax::RescueFrom do
       end
 
       it 'does not log non-notifying exceptions' do
-        proxy = OpenStax::RescueFrom::ExceptionProxy.new(ActiveRecord::RecordNotFound.new 'test')
-        OpenStax::RescueFrom.register_unrecognized_exception proxy.name
+        proxy = OpenStax::RescueFrom::ExceptionProxy.new(ActiveRecord::RecordNotFound.new 'test', notify: false)
+        OpenStax::RescueFrom.register_exception proxy.name
 
         expect(OpenStax::RescueFrom::Logger).not_to receive(:new)
         described_class.send :log_system_error, proxy
