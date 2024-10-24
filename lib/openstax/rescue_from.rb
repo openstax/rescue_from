@@ -9,7 +9,6 @@ module OpenStax
     class << self
       def perform_rescue(exception, listener = MuteListener.new)
         proxy = ExceptionProxy.new(exception)
-        register_unrecognized_exception(proxy.name)
         log_system_error(proxy)
         send_notifying_exceptions(proxy, listener)
         finish_exception_rescue(proxy, listener)
@@ -17,7 +16,6 @@ module OpenStax
 
       def perform_background_rescue(exception, listener = MuteListener.new)
         proxy = ExceptionProxy.new(exception)
-        register_unrecognized_exception(proxy.name)
         log_background_system_error(proxy)
         send_notifying_background_exceptions(proxy)
         finish_background_exception_rescue(proxy, listener)
@@ -42,12 +40,6 @@ module OpenStax
         options = ExceptionOptions.new(options)
         @@registered_exceptions ||= {}
         @@registered_exceptions[name] = options
-      end
-
-      def register_unrecognized_exception(exception_class, options = {})
-        unless registered_exceptions.keys.include?(exception_class)
-          register_exception(exception_class, options)
-        end
       end
 
       # For rescuing from specific blocks of code: OpenStax::RescueFrom.this {...}
@@ -84,15 +76,15 @@ module OpenStax
       end
 
       def notifies_for?(exception_name)
-        notifying_exceptions.include?(exception_name)
+        options_for(exception_name).notify?
       end
 
       def status(exception_name)
-        @@registered_exceptions[exception_name].status_code
+        options_for(exception_name).status_code
       end
 
       def sorry(exception_name)
-        @@registered_exceptions[exception_name].sorry
+        options_for(exception_name).sorry
       end
 
       def http_code(status)
@@ -100,7 +92,7 @@ module OpenStax
       end
 
       def extras_proc(exception_name)
-        @@registered_exceptions[exception_name].extras
+        options_for(exception_name).extras
       end
 
       def generate_id
@@ -116,8 +108,9 @@ module OpenStax
       end
 
       private
+
       def options_for(name)
-        @@registered_exceptions[name]
+        @@registered_exceptions[name] || ExceptionOptions.new
       end
 
       def friendly_status_messages
